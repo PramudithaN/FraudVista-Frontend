@@ -44,3 +44,92 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-thumb:hover {
   background: #0e35e2; /* Color of the scrollbar handle on hover */
 }
+
+/* Card Layout-DASHBOARD---------------------------------------------------------- */
+.header-container {
+  display: flex;
+  flex-direction: row-reverse; /* Reversing the direction */
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding-left: 1590px; 
+}
+
+.label-container {
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  width: 150px;
+  justify-content: center; 
+  border-radius: 10px;
+  padding-left: 5px;
+}
+
+
+.margin-container {
+  margin: 0 16px;
+  margin-bottom: 20px;
+}
+
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex-item {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.half-width {
+  flex: 0.5;
+  margin-left: 10px;
+}
+
+.card-container-0 {
+  padding: 24px;
+  min-height: 360px;
+  font-size: 20px;
+  background: #191c24;
+  border-radius: var(--borderRadiusLG);
+  color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  height: 740px;
+  border-radius: 10px;
+}
+
+.card-container {
+  padding: 24px;
+  min-height: 360px;
+  font-size: 20px;
+  background: #191c24;
+  border-radius: var(--borderRadiusLG);
+  color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.card-content {
+  padding: 24px;
+  min-height: 360px;
+  font-size: 22px;
+  font-weight: bold;
+  background: #191c24;
+  border-radius: var(--borderRadiusLG);
+  color: #cccccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding-bottom: 80px;
+  margin-bottom: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.large-text {
+  font-size: 60px;
+  padding-top: 30px;
+  color: white;
+  font-weight: normal;
+}
+

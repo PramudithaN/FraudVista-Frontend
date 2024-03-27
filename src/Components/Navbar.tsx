@@ -1,19 +1,13 @@
 import {
 	CopyOutlined,
-	DesktopOutlined,
 	DollarOutlined,
-	FileOutlined,
 	LogoutOutlined,
-	MoneyCollectFilled,
 	PieChartOutlined,
-	ReconciliationOutlined,
 	TeamOutlined,
-	UserOutlined,
 } from "@ant-design/icons";
-import { Layout, MenuProps, theme, Menu, Breadcrumb, Switch } from "antd";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Link, Route, Routes } from "react-router-dom";
+import { Layout, MenuProps, theme, Menu } from "antd";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import MyChart from "./MyChart";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -39,7 +33,7 @@ function getItem(
 const items: MenuItem[] = [
 	getItem("Dashboard", "1", <PieChartOutlined />),
 	getItem("Transactions", "2", <DollarOutlined />),
-	getItem("Reports", "3",<CopyOutlined />),
+	getItem("Reports", "3", <CopyOutlined />),
 	getItem("Profile", "4", <TeamOutlined />),
 	getItem("Logout", "9", <LogoutOutlined />),
 ];
@@ -72,28 +66,9 @@ const Navbar: React.FC = () => {
 	return (
 		<Layout style={{ minHeight: "100vh", backgroundColor: "#000000" }}>
 			{/* Header-TopNavbar-------------------------------------------------------- */}
-			<Header
-				style={{
-					display: "flex",
-					flexDirection: "revert",
-					alignItems: "flex-end",
-					justifyContent: "flex-end",
-					paddingLeft: "1590px",
-				}}
-			>
+			<Header className="header-container">
 				<div className="demo-logo" />
-				<div
-					className="m-4"
-					style={{
-						color: "white",
-						fontWeight: "600",
-						fontSize: "15px",
-						width: "150px",
-						justifyContent: "center",
-						borderRadius: "10px",
-						paddingLeft: "5px",
-					}}
-				>
+				<div className="label-container">
 					<label className="m-2">ANDREW GARFIELD</label>
 				</div>
 				{/* <Menu
@@ -174,27 +149,18 @@ const Navbar: React.FC = () => {
 
 				<Layout style={{ backgroundColor: "#020617" }}>
 					{/* Header --------------------------------------------------------*/}
-					<Header style={{ padding: 0, background: '#020617' }} />
+					<Header style={{ padding: 0, background: "#020617" }} />
 
 					{/* Content  for Real-Time Transactions--------------------------------------------------------*/}
-					<Content style={{ margin: "0 16px", marginBottom: "20px" }}>
-						<div style={{ display: "flex", justifyContent: "space-between" }}>
-							<div style={{ flex: 1, marginRight: "10px" }}>
-								<div
-									style={{
-										padding: 24,
-										minHeight: 360,
-										fontSize: "20px",
-										background: "#191c24",
-										borderRadius: borderRadiusLG,
-										color: "white",
-										height: "740px",
-										marginBottom: "20px",
-										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-									}}
-								>
+					<Content className="margin-container">
+						<div className="flex-container">
+							<div className="flex-item">
+								<div className="card-container-0">
 									Real-Time Transactions
-									<div className="m-5"><MyChart /></div>
+									{/* Js Charts-------------------------------------------------------- */}
+									<div className="mt-9">
+										<MyChart />
+									</div>
 								</div>
 							</div>
 
@@ -202,54 +168,34 @@ const Navbar: React.FC = () => {
 							<div
 								style={{ display: "-ms-grid", justifyContent: "space-evenly" }}
 							>
-								<div style={{ flex: 0.5, marginLeft: "10px" }}>
-									<div
-										style={{
-											padding: 24,
-											minHeight: 360,
-											fontSize: "30px",
-											background: "#191c24",
-											borderRadius: borderRadiusLG,
-											color: "white",
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-											flexDirection: "column",
-											paddingBottom: "80px",
-											marginBottom: "20px",
-											boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-										}}
-									>
+								<div className="half-width">
+									<div className="card-content">
 										Total No. of Transactions
-										<div style={{ fontSize: "60px", paddingTop: "30px" }}>
-											{data.month}February{" "}
+										<div className="large-text">{data.month}February </div>
+										<div
+											style={{
+												fontSize: "60px",
+												color: "white",
+												fontWeight: "normal",
+											}}
+										>
+											100{data.number}
 										</div>
-										<div style={{ fontSize: "60px" }}>100{data.number}</div>
 									</div>
 								</div>
-								<div style={{ flex: 0.5, marginLeft: "10px" }}>
-									<div
-										style={{
-											padding: 24,
-											minHeight: 360,
-											fontSize: "22px",
-											background: "#191c24",
-											borderRadius: borderRadiusLG,
-											color: "white",
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-											flexDirection: "column",
-											paddingBottom: "80px",
-											marginBottom: "20px",
-											boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-										}}
-									>
+								<div className="half-width">
+									<div className="card-content">
 										Total No. of Flagged Transactions
-										<div style={{ fontSize: "60px", paddingTop: "30px" }}>
-											{data.month}February{" "}
+										<div className="large-text">{data.month}February </div>
+										<div
+											style={{
+												fontSize: "60px",
+												color: "white",
+												fontWeight: "normal",
+											}}
+										>
+											2{data.number}
 										</div>
-										<div style={{ fontSize: "60px" }}>2{data.number}</div>
 									</div>
 								</div>
 							</div>
@@ -257,73 +203,25 @@ const Navbar: React.FC = () => {
 					</Content>
 
 					{/* Content for Transactions by Type-------------------------------------------------------- */}
-					<Content style={{ margin: "0 16px", marginBottom: "20px" }}>
-						<div style={{ display: "flex", justifyContent: "space-between" }}>
-							<div style={{ flex: 1, marginRight: "10px" }}>
-								<div
-									style={{
-										padding: 24,
-										minHeight: 360,
-										fontSize: "20px",
-										background: "#191c24",
-										borderRadius: borderRadiusLG,
-										color: "white",
-										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-									}}
-								>
-									Transactions by Type
-								</div>
+					<Content className="margin-container">
+						<div className="flex-container">
+							<div className="flex-item">
+								<div className="card-container">Transactions by Type</div>
 							</div>
-							<div style={{ flex: 0.5, marginLeft: "10px" }}>
-								<div
-									style={{
-										padding: 24,
-										minHeight: 360,
-										fontSize: "20px",
-										background: "#191c24",
-										borderRadius: borderRadiusLG,
-										color: "white",
-										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-									}}
-								>
-									Unusual Alerts Identified
-								</div>
+							<div className="half-width">
+								<div className="card-container">Unusual Alerts Identified</div>
 							</div>
 						</div>
 					</Content>
 
 					{/* Content for Fraud Analytics --------------------------------------------------------*/}
-					<Content style={{ margin: "0 16px", marginBottom: "20px" }}>
-						<div style={{ display: "flex", justifyContent: "space-between" }}>
-							<div style={{ flex: 1, marginRight: "10px" }}>
-								<div
-									style={{
-										padding: 24,
-										minHeight: 360,
-										fontSize: "20px",
-										background: "#191c24",
-										borderRadius: borderRadiusLG,
-										color: "white",
-										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-									}}
-								>
-									Fraud Analytics
-								</div>
+					<Content className="margin-container">
+						<div className="flex-container">
+							<div className="flex-item">
+								<div className="card-container">Fraud Analytics</div>
 							</div>
-							<div style={{ flex: 0.5, marginLeft: "10px" }}>
-								<div
-									style={{
-										padding: 24,
-										minHeight: 360,
-										fontSize: "20px",
-										background: "#191c24",
-										borderRadius: borderRadiusLG,
-										color: "white",
-										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-									}}
-								>
-									Alert Analytics
-								</div>
+							<div className="half-width">
+								<div className="card-container">Alert Analytics</div>
 							</div>
 						</div>
 					</Content>
