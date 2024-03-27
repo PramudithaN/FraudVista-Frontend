@@ -1,7 +1,12 @@
 import {
+	CopyOutlined,
 	DesktopOutlined,
+	DollarOutlined,
 	FileOutlined,
+	LogoutOutlined,
+	MoneyCollectFilled,
 	PieChartOutlined,
+	ReconciliationOutlined,
 	TeamOutlined,
 	UserOutlined,
 } from "@ant-design/icons";
@@ -9,6 +14,7 @@ import { Layout, MenuProps, theme, Menu, Breadcrumb, Switch } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
+import MyChart from "./MyChart";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -32,10 +38,10 @@ function getItem(
 // SideNavbar Items
 const items: MenuItem[] = [
 	getItem("Dashboard", "1", <PieChartOutlined />),
-	getItem("Transactions", "2", <DesktopOutlined />),
-	getItem("Reports", "3", <UserOutlined />),
+	getItem("Transactions", "2", <DollarOutlined />),
+	getItem("Reports", "3",<CopyOutlined />),
 	getItem("Profile", "4", <TeamOutlined />),
-	getItem("Logout", "9", <FileOutlined />),
+	getItem("Logout", "9", <LogoutOutlined />),
 ];
 
 // TopNavbar Items
@@ -65,7 +71,7 @@ const Navbar: React.FC = () => {
 
 	return (
 		<Layout style={{ minHeight: "100vh", backgroundColor: "#000000" }}>
-			{/* Header-TopNavbar */}
+			{/* Header-TopNavbar-------------------------------------------------------- */}
 			<Header
 				style={{
 					display: "flex",
@@ -100,7 +106,7 @@ const Navbar: React.FC = () => {
 			</Header>
 
 			<Layout>
-				{/* SideNavbar */}
+				{/* SideNavbar--------------------------------------------------------*/}
 				<Sider
 					collapsible
 					collapsed={collapsed}
@@ -108,7 +114,7 @@ const Navbar: React.FC = () => {
 				>
 					<div className="demo-logo-vertical" />
 
-					{/* User Image Icon */}
+					{/* User Image Icon-------------------------------------------------------- */}
 					<div
 						style={{
 							display: "flex",
@@ -121,11 +127,15 @@ const Navbar: React.FC = () => {
 						<img
 							src="images/ProfIcon.png"
 							alt="Profile"
-							style={{ width: "120px", height: "120px" }}
+							style={{
+								width: collapsed ? "60px" : "120px",
+								height: collapsed ? "60px" : "120px",
+								transition: "all 0.3s",
+							}}
 						/>
 					</div>
 
-					{/* User Name */}
+					{/* User Name-------------------------------------------------------- */}
 					<div
 						style={{
 							color: "white",
@@ -133,12 +143,13 @@ const Navbar: React.FC = () => {
 							alignItems: "center",
 							paddingLeft: "30px",
 							fontSize: "20px",
+							display: collapsed ? "none" : "block",
 						}}
 					>
 						<label className="">Andrew Garfield</label>
 					</div>
 
-					{/* User Role */}
+					{/* User Role-------------------------------------------------------- */}
 					<div
 						style={{
 							color: "white",
@@ -147,6 +158,7 @@ const Navbar: React.FC = () => {
 							paddingLeft: "60px",
 							fontSize: "10px",
 							paddingBottom: "40px",
+							display: collapsed ? "none" : "block",
 						}}
 					>
 						<label className="">FRAUD ANALYST</label>
@@ -160,11 +172,11 @@ const Navbar: React.FC = () => {
 					/>
 				</Sider>
 
-				<Layout style={{ backgroundColor: "#ffffff" }}>
-					{/* Header */}
-					<Header style={{ padding: 0, background: colorBgContainer }} />
+				<Layout style={{ backgroundColor: "#020617" }}>
+					{/* Header --------------------------------------------------------*/}
+					<Header style={{ padding: 0, background: '#020617' }} />
 
-					{/* Content  for Real-Time Transactions*/}
+					{/* Content  for Real-Time Transactions--------------------------------------------------------*/}
 					<Content style={{ margin: "0 16px", marginBottom: "20px" }}>
 						<div style={{ display: "flex", justifyContent: "space-between" }}>
 							<div style={{ flex: 1, marginRight: "10px" }}>
@@ -178,13 +190,15 @@ const Navbar: React.FC = () => {
 										color: "white",
 										height: "740px",
 										marginBottom: "20px",
+										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
 									}}
 								>
 									Real-Time Transactions
+									<div className="m-5"><MyChart /></div>
 								</div>
 							</div>
 
-							{/* Column Cards */}
+							{/* Column Cards-------------------------------------------------------- */}
 							<div
 								style={{ display: "-ms-grid", justifyContent: "space-evenly" }}
 							>
@@ -203,13 +217,14 @@ const Navbar: React.FC = () => {
 											flexDirection: "column",
 											paddingBottom: "80px",
 											marginBottom: "20px",
+											boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
 										}}
 									>
 										Total No. of Transactions
 										<div style={{ fontSize: "60px", paddingTop: "30px" }}>
-											{data.month}:{" "}
+											{data.month}February{" "}
 										</div>
-										<div style={{ fontSize: "60px" }}>{data.number}</div>
+										<div style={{ fontSize: "60px" }}>100{data.number}</div>
 									</div>
 								</div>
 								<div style={{ flex: 0.5, marginLeft: "10px" }}>
@@ -227,20 +242,21 @@ const Navbar: React.FC = () => {
 											flexDirection: "column",
 											paddingBottom: "80px",
 											marginBottom: "20px",
+											boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
 										}}
 									>
 										Total No. of Flagged Transactions
 										<div style={{ fontSize: "60px", paddingTop: "30px" }}>
-											{data.month}:{" "}
+											{data.month}February{" "}
 										</div>
-										<div style={{ fontSize: "60px" }}>{data.number}</div>
+										<div style={{ fontSize: "60px" }}>2{data.number}</div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</Content>
 
-					{/* Content for Transactions by Type */}
+					{/* Content for Transactions by Type-------------------------------------------------------- */}
 					<Content style={{ margin: "0 16px", marginBottom: "20px" }}>
 						<div style={{ display: "flex", justifyContent: "space-between" }}>
 							<div style={{ flex: 1, marginRight: "10px" }}>
@@ -252,6 +268,7 @@ const Navbar: React.FC = () => {
 										background: "#191c24",
 										borderRadius: borderRadiusLG,
 										color: "white",
+										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
 									}}
 								>
 									Transactions by Type
@@ -266,6 +283,7 @@ const Navbar: React.FC = () => {
 										background: "#191c24",
 										borderRadius: borderRadiusLG,
 										color: "white",
+										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
 									}}
 								>
 									Unusual Alerts Identified
@@ -274,7 +292,7 @@ const Navbar: React.FC = () => {
 						</div>
 					</Content>
 
-					{/* Content for Fraud Analytics */}
+					{/* Content for Fraud Analytics --------------------------------------------------------*/}
 					<Content style={{ margin: "0 16px", marginBottom: "20px" }}>
 						<div style={{ display: "flex", justifyContent: "space-between" }}>
 							<div style={{ flex: 1, marginRight: "10px" }}>
@@ -286,6 +304,7 @@ const Navbar: React.FC = () => {
 										background: "#191c24",
 										borderRadius: borderRadiusLG,
 										color: "white",
+										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
 									}}
 								>
 									Fraud Analytics
@@ -300,6 +319,7 @@ const Navbar: React.FC = () => {
 										background: "#191c24",
 										borderRadius: borderRadiusLG,
 										color: "white",
+										boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
 									}}
 								>
 									Alert Analytics

@@ -11,3 +11,36 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Added Montserrat Font -------------------------------------------------------*/
+.montserrat-subrayada-regular {
+  font-family: "Montserrat Subrayada", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.montserrat-subrayada-bold {
+  font-family: "Montserrat Subrayada", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Styles for scrollbar---------------------------------------------------------- */
+body::-webkit-scrollbar {
+  width: 12px; 
+}
+
+/* Track */
+body::-webkit-scrollbar-track {
+  background: #414141; /* Color of the track */
+}
+
+/* Handle */
+body::-webkit-scrollbar-thumb {
+  background: #23549c; /* Color of the scrollbar handle */
+}
+
+/* Handle on hover */
+body::-webkit-scrollbar-thumb:hover {
+  background: #0e35e2; /* Color of the scrollbar handle on hover */
+}

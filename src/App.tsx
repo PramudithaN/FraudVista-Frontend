@@ -8,9 +8,6 @@ function App() {
   <BrowserRouter>
       <Navbar />
       </BrowserRouter>
-    {/* <div className="App">
-      HIII
-    </div> */}
     </>
   );
 }
