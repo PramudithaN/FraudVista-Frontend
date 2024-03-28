@@ -1,135 +1,150 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+		"Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+		sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+		monospace;
 }
 
 /* Added Montserrat Font -------------------------------------------------------*/
 .montserrat-subrayada-regular {
-  font-family: "Montserrat Subrayada", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+	font-family: "Montserrat Subrayada", sans-serif;
+	font-weight: 400;
+	font-style: normal;
 }
 
 .montserrat-subrayada-bold {
-  font-family: "Montserrat Subrayada", sans-serif;
-  font-weight: 700;
-  font-style: normal;
+	font-family: "Montserrat Subrayada", sans-serif;
+	font-weight: 700;
+	font-style: normal;
 }
 
 /* Styles for scrollbar---------------------------------------------------------- */
 body::-webkit-scrollbar {
-  width: 12px; 
+	width: 12px;
 }
 
 /* Track */
 body::-webkit-scrollbar-track {
-  background: #414141; /* Color of the track */
+	background: #414141; /* Color of the track */
 }
 
 /* Handle */
 body::-webkit-scrollbar-thumb {
-  background: #23549c; /* Color of the scrollbar handle */
+	background: #23549c; /* Color of the scrollbar handle */
 }
 
 /* Handle on hover */
 body::-webkit-scrollbar-thumb:hover {
-  background: #0e35e2; /* Color of the scrollbar handle on hover */
+	background: #0e35e2; /* Color of the scrollbar handle on hover */
 }
 
 /* Card Layout-DASHBOARD---------------------------------------------------------- */
 .header-container {
-  display: flex;
-  flex-direction: row-reverse; /* Reversing the direction */
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding-left: 1590px; 
+	display: flex;
+	flex-direction: row-reverse; /* Reversing the direction */
+	align-items: flex-end;
+	justify-content: flex-end;
+	padding-left: 1590px;
 }
 
 .label-container {
-  color: white;
-  font-weight: 600;
-  font-size: 15px;
-  width: 150px;
-  justify-content: center; 
-  border-radius: 10px;
-  padding-left: 5px;
+	color: white;
+	font-weight: 600;
+	font-size: 15px;
+	width: 150px;
+	justify-content: center;
+	border-radius: 10px;
+	padding-left: 5px;
 }
-
 
 .margin-container {
-  margin: 0 16px;
-  margin-bottom: 20px;
+	margin: 0 16px;
+	margin-bottom: 20px;
 }
 
-
 .flex-container {
-  display: flex;
-  justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
 .flex-item {
-  flex: 1;
-  margin-right: 10px;
+	flex: 1;
+	margin-right: 10px;
 }
 
 .half-width {
-  flex: 0.5;
-  margin-left: 10px;
+	flex: 0.5;
+	margin-left: 10px;
+	border-radius: 10px;
 }
 
 .card-container-0 {
-  padding: 24px;
-  min-height: 360px;
-  font-size: 20px;
-  background: #191c24;
-  border-radius: var(--borderRadiusLG);
-  color: white;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  height: 740px;
-  border-radius: 10px;
+	padding: 24px;
+	min-height: 360px;
+	font-size: 20px;
+	background: #191c24;
+	border-radius: var(--borderRadiusLG);
+	color: white;
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	height: 740px;
+	border-radius: 10px;
 }
 
 .card-container {
-  padding: 24px;
-  min-height: 360px;
-  font-size: 20px;
-  background: #191c24;
-  border-radius: var(--borderRadiusLG);
-  color: white;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+	padding: 24px;
+	min-height: 360px;
+	font-size: 20px;
+	background: #191c24;
+	border-radius: var(--borderRadiusLG);
+	color: white;
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
 }
 
 .card-content {
-  padding: 24px;
-  min-height: 360px;
-  font-size: 22px;
-  font-weight: bold;
-  background: #191c24;
-  border-radius: var(--borderRadiusLG);
-  color: #cccccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding-bottom: 80px;
-  margin-bottom: 20px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	padding: 24px;
+	min-height: 360px;
+	font-size: 22px;
+	font-weight: bold;
+	background: #191c24;
+	border-radius: 10px;
+	color: #cccccc;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	padding-bottom: 80px;
+	margin-bottom: 20px;
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .large-text {
-  font-size: 60px;
-  padding-top: 30px;
-  color: white;
-  font-weight: normal;
+	font-size: 60px;
+	padding-top: 30px;
+	color: white;
+	font-weight: normal;
+}
+
+
+/* Custom CSS-Circle chart----------------------------------*/
+.ant-card.ant-card-bordered {
+  color: #cccccc;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Additional styles for the content inside the card */
+.ant-card.ant-card-bordered .ant-card-body {
+  padding: 20px; /* Adjust padding as needed */
+  font-size: 16px; /* Adjust font size as needed */
+  color: #ffffff; /* Adjust text color as needed */
 }
 

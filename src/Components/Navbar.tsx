@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import MyChart from "./MyChart";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -64,8 +64,9 @@ const Navbar: React.FC = () => {
 	// }, []); // Empty dependency array means this effect runs once on mount
 
 	return (
+		<>
 		<Layout style={{ minHeight: "100vh", backgroundColor: "#000000" }}>
-			{/* Header-TopNavbar-------------------------------------------------------- */}
+			{/* Header-TopNavbar*/}
 			<Header className="header-container">
 				<div className="demo-logo" />
 				<div className="label-container">
@@ -81,7 +82,7 @@ const Navbar: React.FC = () => {
 			</Header>
 
 			<Layout>
-				{/* SideNavbar--------------------------------------------------------*/}
+				{/* SideNavbar*/}
 				<Sider
 					collapsible
 					collapsed={collapsed}
@@ -89,7 +90,7 @@ const Navbar: React.FC = () => {
 				>
 					<div className="demo-logo-vertical" />
 
-					{/* User Image Icon-------------------------------------------------------- */}
+					{/* User Image Icon*/}
 					<div
 						style={{
 							display: "flex",
@@ -110,7 +111,7 @@ const Navbar: React.FC = () => {
 						/>
 					</div>
 
-					{/* User Name-------------------------------------------------------- */}
+					{/* User Name */}
 					<div
 						style={{
 							color: "white",
@@ -124,7 +125,7 @@ const Navbar: React.FC = () => {
 						<label className="">Andrew Garfield</label>
 					</div>
 
-					{/* User Role-------------------------------------------------------- */}
+					{/* User Role*/}
 					<div
 						style={{
 							color: "white",
@@ -148,23 +149,20 @@ const Navbar: React.FC = () => {
 				</Sider>
 
 				<Layout style={{ backgroundColor: "#020617" }}>
-					{/* Header --------------------------------------------------------*/}
+					{/* Header */}
 					<Header style={{ padding: 0, background: "#020617" }} />
 
-					{/* Content  for Real-Time Transactions--------------------------------------------------------*/}
+					{/* Content  for Real-Time Transactions*/}
 					<Content className="margin-container">
 						<div className="flex-container">
 							<div className="flex-item">
 								<div className="card-container-0">
 									Real-Time Transactions
-									{/* Js Charts-------------------------------------------------------- */}
-									<div className="mt-9">
-										<MyChart />
-									</div>
+									
 								</div>
 							</div>
 
-							{/* Column Cards-------------------------------------------------------- */}
+							{/* Column Cards */}
 							<div
 								style={{ display: "-ms-grid", justifyContent: "space-evenly" }}
 							>
@@ -202,11 +200,15 @@ const Navbar: React.FC = () => {
 						</div>
 					</Content>
 
-					{/* Content for Transactions by Type-------------------------------------------------------- */}
+					{/* Content for Transactions by Type */}
 					<Content className="margin-container">
 						<div className="flex-container">
 							<div className="flex-item">
-								<div className="card-container">Transactions by Type</div>
+								<div className="card-container">Transactions by Type{/* Js Charts*/}
+								<div className="mt-9 size-2 h-4">
+										<MyChart />
+									</div></div>
+								
 							</div>
 							<div className="half-width">
 								<div className="card-container">Unusual Alerts Identified</div>
@@ -214,7 +216,7 @@ const Navbar: React.FC = () => {
 						</div>
 					</Content>
 
-					{/* Content for Fraud Analytics --------------------------------------------------------*/}
+					{/* Content for Fraud Analytics */}
 					<Content className="margin-container">
 						<div className="flex-container">
 							<div className="flex-item">
@@ -225,13 +227,11 @@ const Navbar: React.FC = () => {
 							</div>
 						</div>
 					</Content>
-
-					{/* <Footer style={{ textAlign: 'center' }}>
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
-        </Footer> */}
 				</Layout>
 			</Layout>
 		</Layout>
+
+	</>
 	);
 };
 
