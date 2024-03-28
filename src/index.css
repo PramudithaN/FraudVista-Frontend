@@ -131,3 +131,20 @@ body::-webkit-scrollbar-thumb:hover {
 	color: white;
 	font-weight: normal;
 }
+
+
+/* Custom CSS-Circle chart----------------------------------*/
+.ant-card.ant-card-bordered {
+  color: #cccccc;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Additional styles for the content inside the card */
+.ant-card.ant-card-bordered .ant-card-body {
+  padding: 20px; /* Adjust padding as needed */
+  font-size: 16px; /* Adjust font size as needed */
+  color: #ffffff; /* Adjust text color as needed */
+}
+

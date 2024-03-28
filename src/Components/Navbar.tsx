@@ -64,6 +64,7 @@ const Navbar: React.FC = () => {
 	// }, []); // Empty dependency array means this effect runs once on mount
 
 	return (
+		<>
 		<Layout style={{ minHeight: "100vh", backgroundColor: "#000000" }}>
 			{/* Header-TopNavbar*/}
 			<Header className="header-container">
@@ -157,10 +158,7 @@ const Navbar: React.FC = () => {
 							<div className="flex-item">
 								<div className="card-container-0">
 									Real-Time Transactions
-									{/* Js Charts*/}
-									<div className="mt-9">
-										<MyChart />
-									</div>
+									
 								</div>
 							</div>
 
@@ -206,7 +204,11 @@ const Navbar: React.FC = () => {
 					<Content className="margin-container">
 						<div className="flex-container">
 							<div className="flex-item">
-								<div className="card-container">Transactions by Type</div>
+								<div className="card-container">Transactions by Type{/* Js Charts*/}
+								<div className="mt-9 size-2 h-4">
+										<MyChart />
+									</div></div>
+								
 							</div>
 							<div className="half-width">
 								<div className="card-container">Unusual Alerts Identified</div>
@@ -228,6 +230,8 @@ const Navbar: React.FC = () => {
 				</Layout>
 			</Layout>
 		</Layout>
+
+	</>
 	);
 };
 
