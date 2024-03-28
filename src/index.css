@@ -148,3 +148,74 @@ body::-webkit-scrollbar-thumb:hover {
   color: #ffffff; /* Adjust text color as needed */
 }
 
+/* CSS for UnderConstruction component-------------------------------------*/
+.uc-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+  }
+  
+  .uc-content {
+	max-width: 600px; /* Adjust the max-width as needed */
+	padding: 20px;
+	text-align: center;
+  }
+  
+  .uc-content p {
+	margin-top: 1rem;
+	color: #7b7b7b; /* Adjust text color as needed */
+  }
+  
+  .uc-content .btn-container {
+	margin-top: 2rem;
+  }
+  
+  .uc-content button {
+	margin-right: 1rem;
+	padding: 0.5rem 1rem;
+	border: 1px solid #000; /* Adjust border color as needed */
+	border-radius: 5px;
+	font-size: 0.875rem;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .uc-content button:hover {
+	background-color: #000; /* Adjust hover background color as needed */
+	color: #fff; /* Adjust hover text color as needed */
+  }
+  
+  .underConstruction {
+	max-width: 400px; /* Adjust the max-width as needed */
+	height: auto;
+  }
+  
+
+  /* Custom CSS for text styling */
+.custom-text {
+	font-size: 0.875rem; /* Adjust the font size as needed */
+	font-weight: 600; /* Adjust the font weight as needed */
+	color: #fff; /* Adjust the text color as needed */
+  }
+  
+
+  /* Animation for card appearance */
+@keyframes fadeIn {
+	from {
+	  opacity: 0;
+	  transform: translateY(20px);
+	}
+	to {
+	  opacity: 1;
+	  transform: translateY(0);
+	}
+  }
+  
+  /* Apply animation to card */
+  .card-container-0,
+  .half-width,
+  .card-container {
+	animation: fadeIn 0.5s ease-in-out forwards;
+  }
