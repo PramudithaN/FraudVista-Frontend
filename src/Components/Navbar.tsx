@@ -5,7 +5,7 @@ import {
 	PieChartOutlined,
 	TeamOutlined,
 } from "@ant-design/icons";
-import { Layout, MenuProps, theme, Menu } from "antd";
+import { Layout, MenuProps, theme, Menu, Modal } from "antd";
 import { useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import MyChart from "../Charts/MyChart";
@@ -13,6 +13,10 @@ import SubMenu from "antd/es/menu/SubMenu";
 import Dashboard from "../Dashboard";
 import Profile from "../Profile";
 import UnderConstruction from "./UnderConstruction";
+import Transactions from "../Transactions";
+import { Log } from "victory";
+import Login from "../Login";
+import ModalPop from "../Modal";
 
 const { Header, Content, Sider } = Layout;
 
@@ -64,9 +68,21 @@ const Navbar: React.FC = () => {
 		getItem("Transactions", "2", <DollarOutlined />, "/transactions"),
 		getItem("Reports", "3", <CopyOutlined />, "/reports"),
 		getItem("Profile", "4", <TeamOutlined />, "/profile"),
-		getItem("Logout", "9", <LogoutOutlined />, "/logout"),
+		// getItem("Logout", "9", <LogoutOutlined />, "/logout"),
 	];
-	
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const showModal = () => {
+		setIsModalOpen(true);
+	};
+
+	const handleOk = () => {
+		setIsModalOpen(false);
+	};
+
+	const handleCancel = () => {
+		setIsModalOpen(false);
+	};
 
 	return (
 		<>
@@ -179,12 +195,33 @@ const Navbar: React.FC = () => {
 									}
 								})}
 							</Menu>
+							<Link to="/signIn" className="font-regular flex justify-around">
+								<div
+									style={{
+										// position: "fixed",
+
+										// height: "48px",
+										// width: `${collapsed ? "80px" : "20%"}`,
+										color: "#9e9e9e",
+										lineHeight: "48px",
+										fontWeight: 400,
+										paddingTop: "20px",
+										paddingLeft: "60px",
+										cursor: "pointer",
+									}}
+								>
+									<i className="fi fi-rr-sign-out-alt mr-3"></i>
+									{!collapsed ? "Sign Out" : ""}
+								</div>
+							</Link>
 						</Sider>
 
 						<Routes>
 							<Route path="dashboard" element={<Dashboard />} />
 							<Route path="reports" element={<UnderConstruction />} />
 							<Route path="profile" element={<Profile />} />
+							<Route path="transactions" element={<Transactions />} />
+							<Route path="logout" element={<ModalPop />} />
 						</Routes>
 					</Layout>
 				</Layout>

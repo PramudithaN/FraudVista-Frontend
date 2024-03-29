@@ -1,22 +1,52 @@
-import { Layout } from "antd";
+import { FloatButton, Layout, Spin } from "antd";
 import { Header, Content } from "antd/es/layout/layout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MyChart from "./Charts/MyChart";
+import axios from "axios";
 
 const Dashboard = () => {
-	const [data, setData] = useState({ month: "", number: 0 }); //state for API data --> month and number of transactions
+	const [data, setData] = useState({ allMonth: "", number: 0 }); //state for API data --> month and number of All transactions
+	const [fraud, setFraud] = useState({ fraudMonth: "", number: 0 }); //state for API data --> month and number of FRAUD transactions
+	const [loading, setLoading] = useState(true);
 
-  // API call for Total No. of Transactions
-	// useEffect(() => {
-	// 	const fetchData = async () => {
-	// 		const result = await axios("http://your-api-url");
+	//API call for Total No. of Transactions
+	useEffect(() => {
+		const allTransactions = async () => {
+			const result = await axios("http://localhost:8080/allTransaction");
 
-	// 		setData(result.data);
-	// 	};
+			// Get the month from the createdDate of the first object
+			const date = new Date(result.data[0].createdDate);
+			const allMonth = date.toLocaleString("default", { month: "long" });
 
-	// 	fetchData();
-	// }, []); // Empty dependency array means this effect runs once on mount
-  
+			// Get the number of objects
+			const number = result.data.length;
+
+			setData({ allMonth, number });
+			setLoading(false);
+		};
+
+		allTransactions();
+	}, []); // Empty dependency array means this effect runs once on mount
+
+	//API call for Fraud Transactions
+	useEffect(() => {
+		const fraudTransactions = async () => {
+			const result = await axios("http://localhost:8080/fraud/transaction");
+
+			// Get the month from the createdDate of the first object
+			const date = new Date(result.data[0]?.createdDate);
+			const fraudMonth = date.toLocaleString("default", { month: "long" });
+
+			// Get the number of objects
+			const number = result.data.length;
+
+			setFraud({ fraudMonth, number });
+			setLoading(false);
+		};
+
+		fraudTransactions();
+	}, []); // Empty dependency array means this effect runs once on mount
+
 	return (
 		<>
 			<Layout style={{ backgroundColor: "#020617" }}>
@@ -31,43 +61,47 @@ const Dashboard = () => {
 						</div>
 
 						{/* Column Cards */}
-						<div
-							style={{
-								display: "-ms-grid",
-								justifyContent: "space-evenly",
-							}}
-						>
-							<div className="half-width">
-								<div className="card-content">
-									Total No. of Transactions
-									<div className="large-text">{data.month}February </div>
-									<div
-										style={{
-											fontSize: "60px",
-											color: "white",
-											fontWeight: "normal",
-										}}
-									>
-										100{data.number}
+						{loading ? (
+							<Spin /> // Add a loading spinner until the data is fetched from the API
+						) : (
+							<div
+								style={{
+									display: "-ms-grid",
+									justifyContent: "space-evenly",
+								}}
+							>
+								<div className="half-width">
+									<div className="card-content">
+										Total No. of Transactions
+										<div className="large-text">{data.allMonth} </div>
+										<div
+											style={{
+												fontSize: "60px",
+												color: "white",
+												fontWeight: "normal",
+											}}
+										>
+											{data.number}
+										</div>
+									</div>
+								</div>
+								<div className="half-width">
+									<div className="card-content">
+										Total No. of Flagged Transactions
+										<div className="large-text">{fraud.fraudMonth} </div>
+										<div
+											style={{
+												fontSize: "60px",
+												color: "white",
+												fontWeight: "normal",
+											}}
+										>
+											{fraud.number}
+										</div>
 									</div>
 								</div>
 							</div>
-							<div className="half-width">
-								<div className="card-content">
-									Total No. of Flagged Transactions
-									<div className="large-text">{data.month}February </div>
-									<div
-										style={{
-											fontSize: "60px",
-											color: "white",
-											fontWeight: "normal",
-										}}
-									>
-										2{data.number}
-									</div>
-								</div>
-							</div>
-						</div>
+						)}
 					</div>
 				</Content>
 
@@ -99,6 +133,7 @@ const Dashboard = () => {
 						</div>
 					</div>
 				</Content>
+				<FloatButton.BackTop />
 			</Layout>
 		</>
 	);

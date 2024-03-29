@@ -132,46 +132,67 @@ body::-webkit-scrollbar-thumb:hover {
 	font-weight: normal;
 }
 
+/* Animation for card appearance */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Apply animation to card */
+.card-container-details,
+.card-container-profile,
+.card-container-0,
+.half-width,
+.card-container {
+	animation: fadeIn 0.5s ease-in-out forwards;
+}
 
 /* Custom CSS-Circle chart----------------------------------*/
 .ant-card.ant-card-bordered {
-  color: #cccccc;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	color: #cccccc;
+	background-color: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Additional styles for the content inside the card */
 .ant-card.ant-card-bordered .ant-card-body {
-  padding: 20px; /* Adjust padding as needed */
-  font-size: 16px; /* Adjust font size as needed */
-  color: #ffffff; /* Adjust text color as needed */
+	padding: 20px; /* Adjust padding as needed */
+	font-size: 16px; /* Adjust font size as needed */
+	color: #ffffff; /* Adjust text color as needed */
 }
 
 /* CSS for UnderConstruction component-------------------------------------*/
 .uc-container {
+	margin-top: -40px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	height: 100vh;
-  }
-  
-  .uc-content {
+}
+
+.uc-content {
 	max-width: 600px; /* Adjust the max-width as needed */
 	padding: 20px;
 	text-align: center;
-  }
-  
-  .uc-content p {
+}
+
+.uc-content p {
 	margin-top: 1rem;
 	color: #7b7b7b; /* Adjust text color as needed */
-  }
-  
-  .uc-content .btn-container {
+}
+
+.uc-content .btn-container {
 	margin-top: 2rem;
-  }
-  
-  .uc-content button {
+}
+
+.uc-content button {
 	margin-right: 1rem;
 	padding: 0.5rem 1rem;
 	border: 1px solid #000; /* Adjust border color as needed */
@@ -180,42 +201,89 @@ body::-webkit-scrollbar-thumb:hover {
 	font-weight: bold;
 	cursor: pointer;
 	transition: background-color 0.3s, color 0.3s;
-  }
-  
-  .uc-content button:hover {
+}
+
+.uc-content button:hover {
 	background-color: #000; /* Adjust hover background color as needed */
 	color: #fff; /* Adjust hover text color as needed */
-  }
-  
-  .underConstruction {
+}
+
+.underConstruction {
 	max-width: 400px; /* Adjust the max-width as needed */
 	height: auto;
-  }
-  
+}
 
-  /* Custom CSS for text styling */
+/* Custom CSS for text styling */
 .custom-text {
 	font-size: 0.875rem; /* Adjust the font size as needed */
 	font-weight: 600; /* Adjust the font weight as needed */
 	color: #fff; /* Adjust the text color as needed */
-  }
-  
+}
 
-  /* Animation for card appearance */
-@keyframes fadeIn {
-	from {
-	  opacity: 0;
-	  transform: translateY(20px);
-	}
-	to {
-	  opacity: 1;
-	  transform: translateY(0);
-	}
-  }
-  
-  /* Apply animation to card */
-  .card-container-0,
-  .half-width,
-  .card-container {
-	animation: fadeIn 0.5s ease-in-out forwards;
-  }
+/* Profile -------------------------------------------------------------------- */
+.Heading {
+	color: white;
+	margin-left: 30px;
+	margin-top: -25px;
+}
+
+.Avatar {
+	size: 100px;
+}
+
+.card-container-profile {
+	padding: 24px;
+	min-height: 360px;
+	font-size: 20px;
+	background: #191c24;
+	border-radius: var(--borderRadiusLG);
+	color: white;
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	height: 440px;
+	border-radius: 10px;
+}
+
+.card-container-details {
+	padding: 24px;
+	/* min-height: 360px; */
+	font-size: 20px;
+	width: 900px;
+	background: #191c24;
+	border-radius: var(--borderRadiusLG);
+	color: white;
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	height: 280px;
+	border-radius: 10px;
+}
+
+.card-container-frauds{
+	padding: 24px;
+	margin-bottom: 400px;
+	margin-left: 800px;
+	/* min-height: 360px; */
+	font-size: 20px;
+	width: 900px;
+	background: #191c24;
+	border-radius: var(--borderRadiusLG);
+	color: white;
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	height: 280px;
+	border-radius: 10px;
+}
+
+/* Reset Password Modal---------------------------------------------------------- */
+.custom-modal .ant-modal-content {
+	
+    background-color: #d1d1d1; /* Change background color */
+    color: #000; /* Change text color */
+}
+
+.custom-modal .ant-modal-header {
+    background-color: #d1d1d1; 
+    color: #000; 
+}
+
+.custom-modal .ant-modal-footer {
+    background-color: #d1d1d1; 
+    color: #000; 
+}
