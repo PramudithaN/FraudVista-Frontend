@@ -5,17 +5,19 @@ import {
 	WarningFilled,
 	WarningOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Col, Input, Layout, Modal, Row } from "antd";
+import { Avatar, Button, Col, Input, Layout, Modal, Row, Spin } from "antd";
 import { Header, Content } from "antd/es/layout/layout";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { CgCloseO } from "react-icons/cg";
+import { MdOutlineAddTask } from "react-icons/md";
 
 const Profile = () => {
 	const [fraud, setFraud] = useState({ fraudMonth: "", number: 0 }); //state for API data --> month and number of FRAUD transactions
 	const [loading, setLoading] = useState(true);
 	const [open, setOpen] = useState(false);
 
-	//API call for Fraud Transactions
+	// API call for Fraud Transactions
 	useEffect(() => {
 		const fraudTransactions = async () => {
 			const result = await axios("http://localhost:8080/fraud/transaction");
@@ -77,7 +79,12 @@ const Profile = () => {
 								type="primary"
 								htmlType="submit"
 								className="login-form-button w-24 mt-2"
-								style={{ marginTop: "30px" }}
+								style={{
+									marginTop: "30px",
+									height: "40px",
+									fontSize: "18px",
+									fontWeight: "600",
+								}}
 								onClick={() => setOpen(true)}
 							>
 								Reset password
@@ -90,15 +97,21 @@ const Profile = () => {
 								onOk={() => setOpen(false)}
 								onCancel={() => setOpen(false)}
 								width={700}
-								style={{color:'white'}}
+								style={{ color: "white" }}
 								className="custom-modal"
 							>
 								<Row gutter={16}>
 									<Col span={12}>
+										{loading && <Spin />}
 										<img
 											src="images/passwordReset.png"
 											alt="Description"
-											style={{ width: "80%", marginTop: "20px" }}
+											onLoad={() => setLoading(false)}
+											style={{
+												display: loading ? "none" : "block",
+												width: "80%",
+												marginTop: "20px",
+											}}
 										/>
 									</Col>
 									<Col span={12}>
@@ -107,7 +120,6 @@ const Profile = () => {
 												marginTop: "40px",
 												marginRight: "40px",
 												marginLeft: "-10px",
-												
 											}}
 										>
 											<label style={{ marginTop: "40px" }}>
@@ -121,15 +133,11 @@ const Profile = () => {
 											<Input.Password
 												placeholder="input password"
 												style={{ marginBottom: "10px" }}
-												
 											/>
 											<label className="mt-8" style={{ marginTop: "20px" }}>
 												Repeat Password
 											</label>
-											<Input.Password
-												placeholder="re-enter password"
-											
-											/>
+											<Input.Password placeholder="re-enter password" />
 										</div>
 									</Col>
 								</Row>
@@ -153,14 +161,37 @@ const Profile = () => {
 									}}
 								>
 									<div>
-										<CloseCircleOutlined /> Flagged as fraud! Transaction ID:
-										123456{" "}
+										<CgCloseO
+											style={{
+												marginTop: "5px",
+												paddingTop: "5px",
+												scale: "1.5",
+												marginRight: "10px",
+											}}
+										/>{" "}
+										Flagged as fraud! Transaction ID: 123456{" "}
 									</div>
 									<div style={{ paddingTop: "20px" }}>
-										<WarningOutlined /> Added a note Transaction ID: 3415
+										<MdOutlineAddTask
+											style={{
+												marginTop: "5px",
+												paddingTop: "5px",
+												scale: "1.5",
+												marginRight: "10px",
+											}}
+										/>{" "}
+										Added a note Transaction ID: 3415
 									</div>
 									<div style={{ paddingTop: "20px" }}>
-										<WarningOutlined /> Added a note Transaction ID: 16578
+										<MdOutlineAddTask
+											style={{
+												marginTop: "5px",
+												paddingTop: "5px",
+												scale: "1.5",
+												marginRight: "10px",
+											}}
+										/>{" "}
+										Added a note Transaction ID: 16578
 									</div>
 								</div>
 							</div>

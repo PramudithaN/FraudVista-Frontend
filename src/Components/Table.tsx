@@ -1,5 +1,5 @@
-import React from "react";
-import { Space, Table, Tag } from "antd";
+import React, { useState } from "react";
+import { Button, Space, Table, Tag } from "antd";
 
 const { Column, ColumnGroup } = Table;
 
@@ -39,44 +39,90 @@ const data: DataType[] = [
 	},
 ];
 
-const TableComponent: React.FC = () => (
-	<Table dataSource={data} style={{backgroundColor:'#f4f4f4',borderRadius:'10px'}}>
-		<Column title="Transaction ID" dataIndex="firstName" key="firstName" />
-		<Column title="Date" dataIndex="lastName" key="lastName" />
-		<Column title="Amount" dataIndex="age" key="age" />
-		<Column title="Transaction Type" dataIndex="address" key="address" />
-		<Column title="Customer ID" dataIndex="address" key="address" />
-		<Column
-			title="Flagged as Fraud"
-			dataIndex="tags"
-			key="tags"
-			render={(tags: string[]) => (
-				<>
-					{tags.map((tag) => {
-						let color = tag.length > 5 ? "geekblue" : "green";
-						if (tag === "loser") {
-							color = "volcano";
-						}
-						return (
-							<Tag color={color} key={tag}>
-								{tag.toUpperCase()}
-							</Tag>
-						);
-					})}
-				</>
-			)}
-		/>
-		<Column
-			title="Notes"
-			key="action"
-			render={(_: any, record: DataType) => (
-				<Space size="middle">
-					<a>View </a>
-					<a>Add Notes</a>
-				</Space>
-			)}
-		/>
-	</Table>
-);
+const TableComponent = () => {
+	const [viewModalOpen, setViewModalOpen] = useState(false);
+	const columns: any[] = [
+		{
+			dataIndex: "createdDate",
+			key: "createdDate",
+			title: "Transaction ID",
+		},
+		{
+			dataIndex: "branchName",
+			key: "branchName",
+			title: "Date",
+		},
+		{
+			dataIndex: "businessUnit",
+			key: "businessUnit",
+			title: "Amount",
+			render: (text: any) => <p>{text ? text : "-"}</p>,
+		},
+		{
+			dataIndex: "transferMethod",
+			key: "transferMethod",
+			title: "Transaction Type",
+			render: (text: any) => <p>{text ? text : "-"}</p>,
+		},
+		{
+			dataIndex: "transferMethod",
+			key: "transferMethod",
+			title: "Customer ID",
+			render: (text: any) => <p>{text ? text : "-"}</p>,
+		},
+		{
+			dataIndex: "status",
+			key: "status",
+			title: "Flagged as Fraud",
+			render: (text: string) => {
+				const colorMap: { [key: string]: string } = {
+					ACCEPTED: "green",
+					PENDING: "orange",
+					IN_TRANSIT: "yellow",
+					REJECTED: "red",
+				};
+				return <Tag color={colorMap[text]}>{text}</Tag>;
+			},
+		},
+		{
+			dataIndex: "action",
+			key: "action",
+			title: "Notes",
+			render: (text: string, record: any, index: any) => {
+				return (
+					<>
+						<Button
+							type="link"
+							size="small"
+							onClick={(e) => {
+								setViewModalOpen(true);
+								//   setSelectedRecord(record);
+							}}
+						>
+							View
+						</Button>
+						<Button
+							type="link"
+							size="small"
+							onClick={(e) => {
+								setViewModalOpen(true);
+								// setSelectedRecord(record);
+							}}
+						>
+							Add Notes
+						</Button>
+					</>
+				);
+			},
+		},
+	];
+	return (
+		<Table
+			// dataSource={data}
+			style={{ backgroundColor: "#f4f4f4", borderRadius: "10px" }}
+			columns={columns}
+		></Table>
+	);
+};
 
 export default TableComponent;

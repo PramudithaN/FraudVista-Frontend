@@ -91,7 +91,10 @@ const Navbar: React.FC = () => {
 					{/* Header-TopNavbar*/}
 					<Header className="header-container">
 						<div className="demo-logo" />
-						<div className="label-container">
+						<div
+							className="label-container"
+							style={{ marginRight: "0px", marginLeft: "120px" }}
+						>
 							<label className="m-2">ANDREW GARFIELD</label>
 						</div>
 						{/* <Menu
@@ -195,7 +198,7 @@ const Navbar: React.FC = () => {
 									}
 								})}
 							</Menu>
-							<Link to="/signIn" className="font-regular flex justify-around">
+							<Link to="/" className="font-regular flex justify-around">
 								<div
 									style={{
 										// position: "fixed",
