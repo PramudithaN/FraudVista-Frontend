@@ -40,7 +40,7 @@ const data: DataType[] = [
 ];
 
 const TableComponent: React.FC = () => (
-	<Table dataSource={data}>
+	<Table dataSource={data} style={{backgroundColor:'#f4f4f4',borderRadius:'10px'}}>
 		<Column title="TXN Id" dataIndex="firstName" key="firstName" />
 		<Column title="Date" dataIndex="lastName" key="lastName" />
 		<Column title="Amount" dataIndex="age" key="age" />
@@ -67,12 +67,12 @@ const TableComponent: React.FC = () => (
 			)}
 		/>
 		<Column
-			title="Action"
+			title="Notes"
 			key="action"
 			render={(_: any, record: DataType) => (
 				<Space size="middle">
 					<a>View </a>
-					<a>Notes</a>
+					<a>Add Notes</a>
 				</Space>
 			)}
 		/>
