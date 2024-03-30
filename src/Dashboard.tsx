@@ -52,7 +52,7 @@ const Dashboard = () => {
 			<Layout style={{ backgroundColor: "#020617" }}>
 				{/* Header */}
 				<Header style={{ padding: 0, background: "#020617" }} />
-
+				<h1 className="Heading">Dashboard</h1>
 				{/* Content  for Real-Time Transactions*/}
 				<Content className="margin-container">
 					<div className="flex-container">
@@ -71,7 +71,7 @@ const Dashboard = () => {
 								}}
 							>
 								<div className="half-width">
-									<div className="card-content">
+								<div className="card-content" style={{height:'280px',paddingTop:'80px'}}>
 										Total No. of Transactions
 										<div className="large-text">{data.allMonth} </div>
 										<div
@@ -85,8 +85,8 @@ const Dashboard = () => {
 										</div>
 									</div>
 								</div>
-								<div className="half-width">
-									<div className="card-content">
+								<div className="half-width" style={{marginTop:'210px',height:'80px'}}>
+									<div className="card-content" style={{height:'280px',paddingTop:'80px'}}>
 										Total No. of Flagged Transactions
 										<div className="large-text">{fraud.fraudMonth} </div>
 										<div

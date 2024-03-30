@@ -41,10 +41,10 @@ const data: DataType[] = [
 
 const TableComponent: React.FC = () => (
 	<Table dataSource={data} style={{backgroundColor:'#f4f4f4',borderRadius:'10px'}}>
-		<Column title="TXN Id" dataIndex="firstName" key="firstName" />
+		<Column title="Transaction ID" dataIndex="firstName" key="firstName" />
 		<Column title="Date" dataIndex="lastName" key="lastName" />
 		<Column title="Amount" dataIndex="age" key="age" />
-		<Column title="TXN Type" dataIndex="address" key="address" />
+		<Column title="Transaction Type" dataIndex="address" key="address" />
 		<Column title="Customer ID" dataIndex="address" key="address" />
 		<Column
 			title="Flagged as Fraud"

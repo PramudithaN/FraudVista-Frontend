@@ -19,6 +19,8 @@ import { Header } from "antd/es/layout/layout";
 const Transactions: React.FC = () => {
 	const [form] = Form.useForm();
 	const { RangePicker } = DatePicker;
+	const [tableData, setTableData] = useState([]); // replace [] with your actual data
+const [filteredData, setFilteredData] = useState([]);
 
 	const formItemLayout = {
 		labelCol: {
@@ -30,12 +32,16 @@ const Transactions: React.FC = () => {
 			sm: { span: 14 },
 		},
 	};
+
+
+
 	return (
 		<Layout style={{ backgroundColor: "#020617" }}>
 			<Header style={{ padding: 0, background: "#020617" }} />
 			<h1 className="Heading">Transaction Inquiry Details</h1>
 			<Form
 				{...formItemLayout}
+				// onFinish={handleSearch}
 				variant="filled"
 				style={{
 					maxWidth: 3200,
@@ -48,8 +54,8 @@ const Transactions: React.FC = () => {
 					<Col span={8}>
 						<Form.Item
 							label={
-								<span style={{ color: "white", marginBottom: "10px" }}>
-									Transaction Id
+								<span style={{ color: "white", marginBottom: "5px" ,fontSize:'20px'}}>
+									Transaction ID 
 								</span>
 							}
 							name="TransactionId"
@@ -67,8 +73,8 @@ const Transactions: React.FC = () => {
 					<Col span={8}>
 						<Form.Item
 							label={
-								<span style={{ color: "white", marginBottom: "10px" }}>
-									Customer Id
+								<span style={{ color: "white", marginBottom: "5px" ,fontSize:'20px'}}>
+									Customer ID
 								</span>
 							}
 							name="CustomerId"
@@ -86,8 +92,8 @@ const Transactions: React.FC = () => {
 					<Col span={8}>
 						<Form.Item
 							label={
-								<span style={{ color: "white", marginBottom: "10px" }}>
-									RangePicker
+								<span style={{ color: "white", marginBottom: "5px" ,fontSize:'20px'}}>
+									Date Range
 								</span>
 							}
 							name="RangePicker"
@@ -107,7 +113,7 @@ const Transactions: React.FC = () => {
 					<Button
 						type="primary"
 						htmlType="submit"
-						style={{ width: "80%", marginBottom: "40px" }}
+						style={{ width: "20%", marginBottom: "40px",marginLeft:'250px' }}
 					>
 						Search
 					</Button>
