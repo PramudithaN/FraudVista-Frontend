@@ -5,7 +5,7 @@ import {
 	PieChartOutlined,
 	TeamOutlined,
 } from "@ant-design/icons";
-import { Layout, MenuProps, theme, Menu, Modal } from "antd";
+import { Layout, MenuProps, theme, Menu, Modal, Button } from "antd";
 import { useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import MyChart from "../Charts/MyChart";
@@ -89,21 +89,18 @@ const Navbar: React.FC = () => {
 			<Content className="bg-slate-950">
 				<Layout style={{ minHeight: "100vh", backgroundColor: "#000000" }}>
 					{/* Header-TopNavbar*/}
-					<Header className="header-container">
-						<div className="demo-logo" />
-						<div
-							className="label-container"
-							style={{ marginRight: "0px", marginLeft: "120px" }}
-						>
-							<label className="m-2">ANDREW GARFIELD</label>
-						</div>
-						{/* <Menu
-					theme="dark"
-					mode="horizontal"
-					defaultSelectedKeys={["2"]}
-					items={items1}
-					style={{ flex: 1, minWidth: 0 }}
-				/> */}
+					<Header
+						className="bg-slate-800 p-0 flex justify-between"
+						style={{
+							display: "flex",
+							justifyContent: "flex-end",
+							alignItems: "flex-start",
+							color: "white",
+							fontWeight: "600",
+							fontSize: "25px",
+						}}
+					>
+						<Link to="/profile">Andrew Garfield</Link>
 					</Header>
 
 					<Layout>
