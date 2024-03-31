@@ -56,7 +56,7 @@ const Transactions = () => {
 	const [filteredData, setFilteredData] = useState([]);
 	const [open, setOpen] = useState(false);
 	const [viewNotes, setViewNotes] = useState(false);
-	const [notes, setNotes] = useState('');
+	const [notes, setNotes] = useState<string[]>([]);
 	const [customerId, setCustomerId] = useState("");
 	const [transactionId, setTransactionId] = useState("");
 	const [fraudTransactions, setFraudTransactions] = useState<string[]>([]);
@@ -77,22 +77,23 @@ const Transactions = () => {
 		},
 	};
 
+	const addNote = (note: string) => {
+		setNotes(prevNotes => [...prevNotes, note]);
+	  };
+	  const onAddNoteButtonClick = () => {
+		// Open the modal and pass the addNote function as a prop
+		setViewModalOpen(true);
+		setOpen(true);
+	  };
+	  
 	const handleUnblock = async (record: DataItem) => {
 		try {
 			//API call to update the user's status to "ACTIVE"
 			await axios.put(`http://localhost:8080/fraud/transaction/flag`, {
-				remark: viewNotes,
+				responseDetails: notes,
 			});
 
-			// Update the local data array with the updated record
-			// const updatedRecord = { ...record, status: "ACTIVE" };
-			// const updatedData = data.map((item) =>
-			// 	item.id === record.id ? updatedRecord : item
-			// );
-			// setData(updatedData);
-			// setFilteredData(updatedData);
-
-			message.success("User unblocked successfully");
+			message.success("Flag as Fraud successfully");
 		} catch (error) {
 			console.error("Error unblocking user:", error);
 			message.error("Failed to unblock user");
@@ -173,7 +174,7 @@ const Transactions = () => {
 				return (
 					<Tag
 						color={isFraud ? "red" : "green"}
-						onClick={() => setIsModalOpen(true)}
+						onClick={() => {setIsModalOpen(true);addNote(record)}}
 						//   style={{
 						// 	cursor: "pointer",
 						// 	backgroundColor: "#4096ff",
@@ -199,26 +200,16 @@ const Transactions = () => {
 						<Button
 							type="link"
 							size="small"
+							disabled={record.flag === "Flagged"}
 							onClick={(e) => {
 								setViewModalOpen(true);
-								setViewNotes(true);
+							
 								//   setSelectedRecord(record);
 							}}
 						>
 							View
 						</Button>
-						<Button
-							type="link"
-							size="small"
-							onClick={(e) => {
-								setViewModalOpen(true);
-								setOpen(true);
-
-								// setSelectedRecord(record);
-							}}
-						>
-							Add Notes
-						</Button>
+						
 					</>
 				);
 			},
@@ -380,8 +371,9 @@ const Transactions = () => {
 							width: "15%",
 							marginBottom: "40px",
 							marginLeft: "250px",
-							height: "50px",
-							fontSize: "25px",
+							height: "40px",
+							fontSize: "22px",
+							paddingTop:'1px',
 							fontWeight: "600",
 						}}
 					>
@@ -474,7 +466,7 @@ const Transactions = () => {
 							paddingBottom: "-10px",
 							marginLeft: "50px",
 						}}
-						onChange={(e) => setNotes(e.target.value)}
+						// onChange={(e) => setNotes(e.target.value)}
 					/>
 				</Form.Item>
 			</Row></Modal>
