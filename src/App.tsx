@@ -8,6 +8,13 @@ import {
   useLocation,
 } from "react-router-dom";
 import Login from './Login';
+import './custom-antd.less';
+import { createFromIconfontCN } from '@ant-design/icons';
+
+// Initialize icon font
+const IconFont = createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_1234567_xyz.js', // Replace with your icon font script URL
+});
 
 function App() {
   return (<>

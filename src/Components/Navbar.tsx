@@ -1,21 +1,17 @@
 import {
 	CopyOutlined,
 	DollarOutlined,
-	LogoutOutlined,
 	PieChartOutlined,
 	TeamOutlined,
 } from "@ant-design/icons";
-import { Layout, MenuProps, theme, Menu, Modal, Button } from "antd";
+import { Layout, MenuProps, theme, Menu } from "antd";
 import { useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
-import MyChart from "../Charts/MyChart";
 import SubMenu from "antd/es/menu/SubMenu";
 import Dashboard from "../Dashboard";
 import Profile from "../Profile";
 import UnderConstruction from "./UnderConstruction";
 import Transactions from "../Transactions";
-import { Log } from "victory";
-import Login from "../Login";
 import ModalPop from "../Modal";
 
 const { Header, Content, Sider } = Layout;

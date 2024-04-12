@@ -2,7 +2,6 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import {
 	Form,
 	Input,
-	Checkbox,
 	Button,
 	Row,
 	Col,
@@ -11,7 +10,7 @@ import {
 	NotificationArgsProps,
 } from "antd";
 import Layout from "antd/es/layout/layout";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 type NotificationPlacement = NotificationArgsProps["placement"];
@@ -74,7 +73,7 @@ const Login = () => {
 						style={{
 							backgroundColor: "#191c24",
 							height: "100vh",
-							width: "700px",
+							// width: "700px",
 						}}
 					>
 						{loading && (
@@ -93,8 +92,8 @@ const Login = () => {
 							onLoad={() => setLoading(false)}
 							style={{
 								display: loading ? "none" : "block",
-								width: "720px",
-								height: "650px",
+								width: "100%",
+								height: "75%",
 							}}
 						/>
 					</Col>
@@ -122,7 +121,7 @@ const Login = () => {
 								marginRight: "400px",
 							}}
 						>
-              {/* Form Fields */}
+              				{/* Form Fields */}
 							<Form
 								form={form}
 								name="normal_login"
@@ -181,7 +180,7 @@ const Login = () => {
 										className="login-form-button"
 										style={{ width: "200px", marginLeft: "200px" }}
 									>
-										LogIn
+										Login
 									</Button>
 								</Form.Item>
 							</Form>

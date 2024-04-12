@@ -11,29 +11,47 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CgCloseO } from "react-icons/cg";
 import { MdOutlineAddTask } from "react-icons/md";
+import dayjs from "dayjs";
+
+interface Transaction {
+	createdDate: string;
+	isFraud: string; 
+}
 
 const Profile = () => {
-	const [fraud, setFraud] = useState({ fraudMonth: "", number: 0 }); //state for API data --> month and number of FRAUD transactions
+	const [data, setData] = useState({ allMonth: "", number: 0 }); //state for API data --> month and number of All transactions
+	const [fraudCount, setFraudCount] = useState<number>(0);
 	const [loading, setLoading] = useState(true);
 	const [open, setOpen] = useState(false);
 
-	// API call for Fraud Transactions
-	useEffect(() => {
-		const fraudTransactions = async () => {
-			const result = await axios("http://localhost:8080/fraud/transaction");
+	// Get current month
+	const currentMonth = dayjs().format("MMMM");
 
-			// Get the month from the createdDate of the first object
-			const date = new Date(result.data[0]?.createdDate);
-			const fraudMonth = date.toLocaleString("default", { month: "long" });
+	//API call for Total No. of Transactions
+	useEffect(() => {
+		const allTransactions = async () => {
+			const result = await axios("http://localhost:8080/allTransaction");
+
+			// Filter transactions for the current month
+			const currentMonthTransactions: Transaction[] = result.data.filter(
+				(transaction: Transaction) => {
+					const transactionDate = new Date(transaction.createdDate);
+					return transactionDate.getMonth() === new Date().getMonth();
+				}
+			);
 
 			// Get the number of objects
-			const number = result.data.length;
+			const number = currentMonthTransactions.length;
+			const flaggedTransactions = currentMonthTransactions.filter(
+				(transaction) => transaction.isFraud === "Y"
+			);
+			setFraudCount(flaggedTransactions.length);
 
-			setFraud({ fraudMonth, number });
+			setData({ allMonth: currentMonth, number }); // Use current month
 			setLoading(false);
 		};
 
-		fraudTransactions();
+		allTransactions();
 	}, []); // Empty dependency array means this effect runs once on mount
 
 	return (
@@ -207,27 +225,27 @@ const Profile = () => {
 							<div
 								className="large-text"
 								style={{
-									fontSize: "60px",
+									fontSize: "80px",
 									color: "white",
-									fontWeight: "normal",
+									fontWeight: "300",
 									alignItems: "center",
 									paddingTop: "40px",
-									paddingLeft: "50px",
+									paddingLeft: "80px",
 								}}
 							>
-								{fraud.fraudMonth}{" "}
+								{data.allMonth}{" "}
 							</div>
 							<div
 								style={{
-									fontSize: "60px",
+									fontSize: "80px",
 									color: "white",
-									fontWeight: "normal",
+									fontWeight: "300",
 									alignItems: "center",
 									paddingTop: "10px",
-									paddingLeft: "120px",
+									paddingLeft: "140px",
 								}}
 							>
-								{fraud.number}
+								{fraudCount}
 							</div>
 						</div>
 					</div>
