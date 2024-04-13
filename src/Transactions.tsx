@@ -16,7 +16,6 @@ import { Header } from "antd/es/layout/layout";
 import axios from "axios";
 import moment, { Moment } from "moment";
 import TextArea from "antd/es/input/TextArea";
-import PieChart from "./Charts/PieChart";
 
 interface TableDataItem {
 	// Add the properties of the objects here
