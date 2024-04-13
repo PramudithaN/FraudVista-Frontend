@@ -54,6 +54,7 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 								"#4cd180",
 							],
 							data: chartData,
+                            borderWidth: 0, // Remove the stroke
 						},
 					],
 				},
