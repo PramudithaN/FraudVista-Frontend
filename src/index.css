@@ -119,6 +119,20 @@ body::-webkit-scrollbar-thumb:hover {
 	border-radius: 10px;
 }
 
+.card-container-TBT {
+	padding: 24px;
+	height: 555px;
+	width: 1100px;
+	/* min-height: 360px; */
+	font-size: 20px;
+	background: #191c24;
+	border-radius: var(--borderRadiusLG);
+	color: white;
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
+}
+
+
 .card-container-UAI {
 	padding: 24px;
 	height: 555px;

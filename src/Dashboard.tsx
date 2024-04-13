@@ -1,52 +1,56 @@
 import { DatePicker, FloatButton, Form, Layout, Progress, Spin } from "antd";
 import { Header, Content } from "antd/es/layout/layout";
-import React, { useEffect, useState } from "react";
-import MyChart from "./Charts/MyChart";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import DonutChart from "./Charts/DonutChart";
+import dayjs from "dayjs";
+import CJSPie from "./Charts/ChartjsPir";
+import LineChart from "./Charts/LineChart";
+
+interface Transaction {
+	createdDate: string;
+	isFraud: string;
+}
 
 const Dashboard = () => {
 	const [data, setData] = useState({ allMonth: "", number: 0 }); //state for API data --> month and number of All transactions
-	const [fraud, setFraud] = useState({ fraudMonth: "", number: 0 }); //state for API data --> month and number of FRAUD transactions
 	const [loading, setLoading] = useState(true);
 	const { RangePicker } = DatePicker;
+	const [fraudCount, setFraudCount] = useState<number>(0);
+
+	// Define your default dates
+	const defaultStartDate = dayjs("2024-01-01");
+	const defaultEndDate = dayjs("2024-03-28");
+
+	// Get current month
+	const currentMonth = dayjs().format("MMMM");
+	const [transactionsData, setTransactionsData] = useState<any[]>([]); // Define state to store transactions data
+
 	//API call for Total No. of Transactions
 	useEffect(() => {
 		const allTransactions = async () => {
 			const result = await axios("http://localhost:8080/allTransaction");
-
-			// Get the month from the createdDate of the first object
-			const date = new Date(result.data[0].createdDate);
-			const allMonth = date.toLocaleString("default", { month: "long" });
+			setTransactionsData(result.data);
+			// Filter transactions for the current month
+			const currentMonthTransactions: Transaction[] = result.data.filter(
+				(transaction: Transaction) => {
+					const transactionDate = new Date(transaction.createdDate);
+					return transactionDate.getMonth() === new Date().getMonth();
+				}
+			);
 
 			// Get the number of objects
-			const number = result.data.length;
+			const number = currentMonthTransactions.length;
+			const flaggedTransactions = currentMonthTransactions.filter(
+				(transaction) => transaction.isFraud === "Y"
+			);
+			setFraudCount(flaggedTransactions.length);
 
-			setData({ allMonth, number });
+			setData({ allMonth: currentMonth, number }); // Use current month
 			setLoading(false);
 		};
 
 		allTransactions();
 	}, []); // Empty dependency array means this effect runs once on mount
-
-	// //API call for Fraud Transactions
-	// useEffect(() => {
-	// 	const fraudTransactions = async () => {
-	// 		const result = await axios("http://localhost:8080/fraud/transaction");
-
-	// 		// Get the month from the createdDate of the first object
-	// 		const date = new Date(result.data[0]?.createdDate);
-	// 		const fraudMonth = date.toLocaleString("default", { month: "long" });
-
-	// 		// Get the number of objects
-	// 		const number = result.data.length;
-
-	// 		setFraud({ fraudMonth, number });
-	// 		setLoading(false);
-	// 	};
-
-	// 	fraudTransactions();
-	// }, []); // Empty dependency array means this effect runs once on mount
 
 	return (
 		<>
@@ -98,7 +102,7 @@ const Dashboard = () => {
 										style={{ height: "280px", paddingTop: "80px" }}
 									>
 										Total No. of Flagged Transactions
-										<div className="large-text">{fraud.fraudMonth} </div>
+										<div className="large-text">{data.allMonth} </div>
 										<div
 											style={{
 												fontSize: "60px",
@@ -106,7 +110,7 @@ const Dashboard = () => {
 												fontWeight: "normal",
 											}}
 										>
-											{fraud.number}
+											{fraudCount}
 										</div>
 									</div>
 								</div>
@@ -115,54 +119,14 @@ const Dashboard = () => {
 					</div>
 				</Content>
 
-				{/* Content for Transactions by Type */}
 				<Content className="margin-container">
 					<div className="flex-container">
+						{/* Content for Transactions by Type */}
 						<div className="flex-item">
-							<div className="card-container">
-								Transactions by Type{/* Js Charts*/}
-								<div className="mt-9 size-2 h-4">
-									<DonutChart />
-								</div>
-							</div>
-						</div>
-						<div className="half-width">
-							<div className="card-container">Unusual Alerts Identified</div>
-						</div>
-					</div>
-				</Content>
-
-				{/* Content for Fraud Analytics */}
-				<Content className="margin-container">
-					<div className="flex-container">
-						<div className="flex-item">
-							<div className="card-container">Fraud Analytics</div>
-						</div>
-						<div className="half-width">
-							<div className="card-container">
-								Alert Analytics
-								<div
-									className="mt-16 size-2 h-4"
-									style={{ marginTop: "30px", marginLeft: "20px" }}
-								>
-									<>
-										{" "}
-										<Form variant="filled" style={{ maxWidth: 600 }}>
-											<Form.Item
-											
-												name="RangePicker"
-												style={{
-													width: "400px",
-													color: "white",
-													marginLeft: "80px",
-													marginBottom: "40px",
-												}}
-											>
-												<RangePicker style={{ color: 'white', backgroundColor: 'white' }}/>
-											</Form.Item>
-										</Form>
-									</>
-									<label style={{ marginTop: "150px" }}>
+							<div className="card-container-TBT">
+								Transactions by Type
+								<div className="TopofPie" style={{marginLeft:'650px',marginTop:'100px'}}>
+								<label style={{ marginTop: "150px" }}>
 										Suspicious Alerts
 									</label>
 									<div>
@@ -173,7 +137,7 @@ const Dashboard = () => {
 											size={[400, 30]}
 											style={{
 												marginTop: "10px",
-												borderRadius: "15px",
+												borderRadius: "5px",
 												width: "400px",
 												color: "white",
 												marginBottom: "30px",
@@ -194,7 +158,104 @@ const Dashboard = () => {
 											size={[400, 30]}
 											style={{
 												marginTop: "10px",
-												borderRadius: "15px",
+												borderRadius: "5px",
+												width: "400px",
+												color: "white",
+											}}
+											format={(percent) => (
+												<span style={{ color: "white" }}>{percent}%</span>
+											)}
+										/>
+									</div>
+								</div>
+								<div className="mt-9 size-2 h-4">
+									<CJSPie transactions={transactionsData} />
+								</div>
+								
+								
+							</div>
+						</div>
+						{/* Content for Unusual Alerts Identified */}
+						<div className="half-width">
+							<div className="card-container-UAI">
+								Unusual Alerts Identified
+							</div>
+						</div>
+					</div>
+				</Content>
+
+				<Content className="margin-container">
+					<div className="flex-container">
+						{/* Content for Fraud Analytics */}
+						<div className="flex-item">
+							<div className="card-container">
+								Fraud Analytics
+								<div className="mt-16 size-2 h-4">
+									<LineChart />
+								</div>
+							</div>
+						</div>
+
+						{/* Content for Alert Analytics */}
+						<div className="half-width">
+							<div className="card-container">
+								Alert Analytics
+								<div
+									className="mt-16 size-2 h-4"
+									style={{ marginTop: "30px", marginLeft: "20px" }}
+								>
+									<>
+										{" "}
+										<Form variant="filled" style={{ maxWidth: 600 }}>
+											<Form.Item
+												name="RangePicker"
+												style={{
+													width: "400px",
+													color: "white",
+													marginLeft: "0px",
+													marginBottom: "40px",
+												}}
+											>
+												<RangePicker
+													defaultValue={[defaultStartDate, defaultEndDate]} // Set default values
+													style={{ color: "black", backgroundColor: "white" }}
+												/>
+											</Form.Item>
+										</Form>
+									</>
+									<label style={{ marginTop: "150px" }}>
+										Suspicious Alerts
+									</label>
+									<div>
+										<Progress
+											trailColor="#2e3037"
+											strokeColor="#ffe162"
+											percent={50}
+											size={[400, 30]}
+											style={{
+												marginTop: "10px",
+												borderRadius: "5px",
+												width: "400px",
+												color: "white",
+												marginBottom: "30px",
+											}}
+											format={(percent) => (
+												<span style={{ color: "white" }}>{percent}%</span>
+											)}
+										/>
+									</div>
+									<label style={{ marginBottom: "2px", marginTop: "150px" }}>
+										Fraud Alerts
+									</label>
+									<div>
+										<Progress
+											trailColor="#2e3037"
+											strokeColor="#ff6358"
+											percent={30}
+											size={[400, 30]}
+											style={{
+												marginTop: "10px",
+												borderRadius: "5px",
 												width: "400px",
 												color: "white",
 											}}

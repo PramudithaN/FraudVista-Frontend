@@ -1,28 +1,20 @@
 import {
 	Button,
-	Cascader,
 	DatePicker,
+	FloatButton,
 	Form,
 	Input,
-	InputNumber,
 	Layout,
-	Mentions,
 	Modal,
-	Radio,
-	Select,
 	Table,
 	Tag,
-	TreeSelect,
 	message,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Row, Col } from "antd";
 import { Header } from "antd/es/layout/layout";
-import TableComponent from "./Components/Table";
 import axios from "axios";
-import { ExclamationCircleOutlined, WarningOutlined } from "@ant-design/icons";
-import modal from "antd/es/modal";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import TextArea from "antd/es/input/TextArea";
 
 interface TableDataItem {
@@ -48,6 +40,15 @@ interface DataItem {
 	};
 }
 
+interface Transaction {
+	id: number;
+	createdDate: string;
+	amount: number;
+	transactionType: string;
+	customerId: string;
+	flag: string;
+}
+
 // const TableComponent = () => {
 const Transactions = () => {
 	const [form] = Form.useForm();
@@ -64,6 +65,14 @@ const Transactions = () => {
 	const [data, setData] = useState<DataItem[]>([]);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isTextAreaEmpty, setIsTextAreaEmpty] = useState(true);
+	const [dataMonth, setDataMonth] = useState({ allMonth: "", number: 0 });
+	const [loading, setLoading] = useState(true);
+	// const [dateRange, setDateRange] = useState([]);
+	const [dateRange, setDateRange] = useState<[Moment | null, Moment | null]>([
+		null,
+		null,
+	]);
+
 
 	// Layout for Form
 	const formItemLayout = {
@@ -78,14 +87,14 @@ const Transactions = () => {
 	};
 
 	const addNote = (note: string) => {
-		setNotes(prevNotes => [...prevNotes, note]);
-	  };
-	  const onAddNoteButtonClick = () => {
+		setNotes((prevNotes) => [...prevNotes, note]);
+	};
+	const onAddNoteButtonClick = () => {
 		// Open the modal and pass the addNote function as a prop
 		setViewModalOpen(true);
 		setOpen(true);
-	  };
-	  
+	};
+
 	const handleUnblock = async (record: DataItem) => {
 		try {
 			//API call to update the user's status to "ACTIVE"
@@ -142,8 +151,9 @@ const Transactions = () => {
 			dataIndex: "amount",
 			key: "amount",
 			title: "Amount",
+			align: "right",
 			render: (text: any) => (
-				<p>
+				<p style={{ textAlign: "right" }}>
 					{text
 						? parseFloat(text).toLocaleString(undefined, {
 								minimumFractionDigits: 2,
@@ -174,7 +184,10 @@ const Transactions = () => {
 				return (
 					<Tag
 						color={isFraud ? "red" : "green"}
-						onClick={() => {setIsModalOpen(true);addNote(record)}}
+						onClick={() => {
+							setIsModalOpen(true);
+							addNote(record);
+						}}
 						//   style={{
 						// 	cursor: "pointer",
 						// 	backgroundColor: "#4096ff",
@@ -203,13 +216,12 @@ const Transactions = () => {
 							disabled={record.flag === "Flagged"}
 							onClick={(e) => {
 								setViewModalOpen(true);
-							
+
 								//   setSelectedRecord(record);
 							}}
 						>
 							View
 						</Button>
-						
 					</>
 				);
 			},
@@ -246,13 +258,49 @@ const Transactions = () => {
 		}
 	};
 
+	const fetchData = async () => {
+		try {
+			console.log("Fetching data for date range:", dateRange);
+			const response = await axios.get<Transaction[]>(
+				"http://localhost:8080/allTransaction"
+			);
+			console.log("Response Data:", response.data); // Log the response data
+			const filteredData = response.data.filter((transaction) => {
+				const transactionDate = moment(transaction.createdDate);
+				const startDate = moment(dateRange[0]);
+				const endDate = moment(dateRange[0]).endOf("day"); // Set the end date to the end of the selected day
+
+				// Check if the transaction date is within the selected date range
+				return (
+					transactionDate.isSameOrAfter(startDate) &&
+					transactionDate.isSameOrBefore(endDate)
+				);
+			});
+			console.log("Filtered Data:", filteredData); // Log the filtered data
+			setTableData(filteredData);
+		} catch (error) {
+			console.error("Error fetching data:", error);
+			message.error("Failed to fetch data");
+		}
+	};
+	useEffect(() => {
+		console.log("Date Range:", dateRange);
+		fetchData();
+	}, [dateRange]);
+	
+	const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
+		const convertedDates: [Moment | null, Moment | null] = [
+			moment(dates[0]),
+			moment(dates[1]),
+		];
+		setDateRange(convertedDates);
+	};
+
 	const showModal = () => {
 		setIsModalOpen(true);
 	};
 
 	const handleOk = (record: any) => {
-		// const comment = textAreaRef.current?.state.value;
-		//   console.log(comment); // You can replace this line with your own logic
 		handleUnblock(record);
 		setFraudTransactions((prev) => [...prev, transactionId]);
 		setIsModalOpen(false);
@@ -269,13 +317,17 @@ const Transactions = () => {
 				{...formItemLayout}
 				form={form}
 				onFinish={(values) => {
-					const { TransactionId, CustomerId } = values;
-					if (TransactionId) {
-						searchByTransactionID(TransactionId);
-					} else if (CustomerId) {
-						searchByCustomerID(CustomerId);
+					{
+						const { TransactionId, CustomerId } = values;
+						if (TransactionId) {
+							searchByTransactionID(TransactionId);
+						} else if (CustomerId) {
+							searchByCustomerID(CustomerId);
+						} else if (dateRange) {
+							fetchData();
+						}
+						form.resetFields();
 					}
-					form.resetFields();
 				}}
 				variant="filled"
 				style={{
@@ -295,6 +347,7 @@ const Transactions = () => {
 										color: "white",
 										marginBottom: "5px",
 										fontSize: "20px",
+										marginRight: "10px",
 									}}
 								>
 									Transaction ID
@@ -353,6 +406,9 @@ const Transactions = () => {
 							name="RangePicker"
 						>
 							<RangePicker
+								onChange={(dates, dateStrings) =>
+									handleDateRangeChange(dates, dateStrings)
+								}
 								style={{
 									backgroundColor: "white",
 									color: "black",
@@ -367,26 +423,70 @@ const Transactions = () => {
 					<Button
 						type="primary"
 						htmlType="submit"
+						onClick={fetchData}
 						style={{
-							width: "15%",
-							marginBottom: "40px",
+							// width: "15%",
+							marginBottom: "20px",
 							marginLeft: "250px",
 							height: "40px",
 							fontSize: "22px",
-							paddingTop:'1px',
+							paddingTop: "1px",
+							paddingLeft: "40px",
+							paddingRight: "40px",
 							fontWeight: "600",
 						}}
 					>
 						Search
 					</Button>
 				</Form.Item>
+				<div
+					style={{
+						color: "white",
+						// width: "15%",
+						marginBottom: "40px",
+						marginLeft: "250px",
+						height: "40px",
+						fontSize: "18px",
+						paddingTop: "-100px",
+						paddingLeft: "200px",
+						paddingRight: "40px",
+						fontWeight: "400",
+						fontStyle: "italic",
+					}}
+				>
+					<Tag
+						style={{
+							color: "#4096ff",
+							backgroundColor: "#292e3c",
+							borderColor: "#434b62",
+							stroke: "#292e3c",
+							height: "40px",
+							fontSize: "18px",
+							paddingTop: "8px",
+							fontWeight: "400",
+							fontStyle: "italic",
+						}}
+					>
+						Please search using any of the above criteria to inquire transaction
+						details.
+					</Tag>
+				</div>
 
 				{/* <TableComponent /> */}
 				<Table
 					dataSource={tableData}
 					style={{ backgroundColor: "#f4f4f4", borderRadius: "10px" }}
 					columns={columns}
+					rowKey="id" // Set a unique key for each row
 				/>
+
+				{/* Content for Transactions by Type */}
+				<div className="flex-item" style={{ marginTop: "50px" }}>
+					<div className="card-container">
+						Transactions by Type
+						<div className="mt-9 size-2 h-4">{/* <PieChart /> */}</div>
+					</div>
+				</div>
 
 				{/* Add Notes */}
 				{/* <Modal
@@ -453,24 +553,28 @@ const Transactions = () => {
 					open={isModalOpen}
 					onOk={handleOk}
 					onCancel={handleCancel}
-				>	<Row gutter={16}>
-				<Form.Item name={["addNotes", "introduction"]}>
-					<TextArea
-						rows={4}
-						placeholder="Add your Notes here..."
-						maxLength={250}
-						style={{
-							width: "600px",
-							paddingTop: "20px",
-							marginTop: "20px",
-							paddingBottom: "-10px",
-							marginLeft: "50px",
-						}}
-						// onChange={(e) => setNotes(e.target.value)}
-					/>
-				</Form.Item>
-			</Row></Modal>
+				>
+					{" "}
+					<Row gutter={16}>
+						<Form.Item name={["addNotes", "introduction"]}>
+							<TextArea
+								rows={4}
+								placeholder="Add your Notes here..."
+								maxLength={250}
+								style={{
+									width: "600px",
+									paddingTop: "20px",
+									marginTop: "20px",
+									paddingBottom: "-10px",
+									marginLeft: "50px",
+								}}
+								// onChange={(e) => setNotes(e.target.value)}
+							/>
+						</Form.Item>
+					</Row>
+				</Modal>
 			</Form>
+			<FloatButton.BackTop />
 		</Layout>
 	);
 };
