@@ -1,42 +1,49 @@
 import {
 	CopyOutlined,
 	DollarOutlined,
-	LogoutOutlined,
 	PieChartOutlined,
 	TeamOutlined,
 } from "@ant-design/icons";
 import { Layout, MenuProps, theme, Menu } from "antd";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import MyChart from "./MyChart";
+import { Link, Route, Routes } from "react-router-dom";
+import SubMenu from "antd/es/menu/SubMenu";
+import Dashboard from "../Dashboard";
+import Profile from "../Profile";
+import UnderConstruction from "./UnderConstruction";
+import Transactions from "../Transactions";
+import ModalPop from "../Modal";
 
 const { Header, Content, Sider } = Layout;
 
-type MenuItem = Required<MenuProps>["items"][number];
+// type MenuItem = Required<MenuProps>["items"][number];
+
+type MenuItem = {
+	label: React.ReactNode;
+	key: React.Key;
+	icon: React.ReactNode;
+	path?: string;
+	children?: MenuItem[];
+	type?: "group";
+};
 
 function getItem(
 	label: React.ReactNode,
 	key: React.Key,
-	icon?: React.ReactNode,
+	icon: React.ReactNode,
+	path?: string,
 	children?: MenuItem[],
-	path?: string
+	type?: "group"
 ): MenuItem {
 	return {
+		label,
 		key,
 		icon,
+		path,
 		children,
-		label: path ? <Link to={path}>{label}</Link> : label,
-	} as MenuItem;
+		type,
+	};
 }
-
-// SideNavbar Items
-const items: MenuItem[] = [
-	getItem("Dashboard", "1", <PieChartOutlined />),
-	getItem("Transactions", "2", <DollarOutlined />),
-	getItem("Reports", "3", <CopyOutlined />),
-	getItem("Profile", "4", <TeamOutlined />),
-	getItem("Logout", "9", <LogoutOutlined />),
-];
 
 // TopNavbar Items
 const items1: MenuProps["items"] = ["1", "2", "3"].map((key) => ({
@@ -51,187 +58,171 @@ const Navbar: React.FC = () => {
 		token: { colorBgContainer, borderRadiusLG },
 	} = theme.useToken();
 	const [data, setData] = useState({ month: "", number: 0 }); //state for API data --> month and number of transactions
+	// SideNavbar Items
+	const items: MenuItem[] = [
+		getItem("Dashboard", "1", <PieChartOutlined />, "/dashboard"),
+		getItem("Transactions", "2", <DollarOutlined />, "/transactions"),
+		getItem("Reports", "3", <CopyOutlined />, "/reports"),
+		getItem("Profile", "4", <TeamOutlined />, "/profile"),
+		// getItem("Logout", "9", <LogoutOutlined />, "/logout"),
+	];
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	// API call for Total No. of Transactions
-	// useEffect(() => {
-	// 	const fetchData = async () => {
-	// 		const result = await axios("http://your-api-url");
+	const showModal = () => {
+		setIsModalOpen(true);
+	};
 
-	// 		setData(result.data);
-	// 	};
+	const handleOk = () => {
+		setIsModalOpen(false);
+	};
 
-	// 	fetchData();
-	// }, []); // Empty dependency array means this effect runs once on mount
+	const handleCancel = () => {
+		setIsModalOpen(false);
+	};
 
 	return (
 		<>
-		<Layout style={{ minHeight: "100vh", backgroundColor: "#000000" }}>
-			{/* Header-TopNavbar*/}
-			<Header className="header-container">
-				<div className="demo-logo" />
-				<div className="label-container">
-					<label className="m-2">ANDREW GARFIELD</label>
-				</div>
-				{/* <Menu
-					theme="dark"
-					mode="horizontal"
-					defaultSelectedKeys={["2"]}
-					items={items1}
-					style={{ flex: 1, minWidth: 0 }}
-				/> */}
-			</Header>
-
-			<Layout>
-				{/* SideNavbar*/}
-				<Sider
-					collapsible
-					collapsed={collapsed}
-					onCollapse={(value) => setCollapsed(value)}
-				>
-					<div className="demo-logo-vertical" />
-
-					{/* User Image Icon*/}
-					<div
+			<Content className="bg-slate-950">
+				<Layout style={{ minHeight: "100vh", backgroundColor: "#000000" }}>
+					{/* Header-TopNavbar*/}
+					<Header
+						className="bg-slate-800 p-0 flex justify-between"
 						style={{
 							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-							paddingTop: "4px",
-							paddingBottom: "10px",
-						}}
-					>
-						<img
-							src="images/ProfIcon.png"
-							alt="Profile"
-							style={{
-								width: collapsed ? "60px" : "120px",
-								height: collapsed ? "60px" : "120px",
-								transition: "all 0.3s",
-							}}
-						/>
-					</div>
-
-					{/* User Name */}
-					<div
-						style={{
+							justifyContent: "flex-end",
+							alignItems: "flex-start",
 							color: "white",
-							justifyContent: "center",
-							alignItems: "center",
-							paddingLeft: "30px",
-							fontSize: "20px",
-							display: collapsed ? "none" : "block",
+							fontWeight: "600",
+							fontSize: "25px",
 						}}
 					>
-						<label className="">Andrew Garfield</label>
-					</div>
+						<Link to="/profile">Andrew Garfield</Link>
+					</Header>
 
-					{/* User Role*/}
-					<div
-						style={{
-							color: "white",
-							justifyContent: "center",
-							alignItems: "center",
-							paddingLeft: "60px",
-							fontSize: "10px",
-							paddingBottom: "40px",
-							display: collapsed ? "none" : "block",
-						}}
-					>
-						<label className="">FRAUD ANALYST</label>
-					</div>
-					<div className="demo-logo-vertical" />
-					<Menu
+					<Layout>
+						{/* SideNavbar*/}
+						<Sider
+							collapsible
+							collapsed={collapsed}
+							onCollapse={(value) => setCollapsed(value)}
+						>
+							<div className="demo-logo-vertical" />
+
+							{/* User Image Icon*/}
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									paddingTop: "4px",
+									paddingBottom: "10px",
+								}}
+							>
+								<img
+									src="images/ProfIcon.png"
+									alt="Profile"
+									style={{
+										width: collapsed ? "60px" : "120px",
+										height: collapsed ? "60px" : "120px",
+										transition: "all 0.3s",
+									}}
+								/>
+							</div>
+
+							{/* User Name */}
+							<div
+								style={{
+									color: "white",
+									justifyContent: "center",
+									alignItems: "center",
+									paddingLeft: "30px",
+									fontSize: "20px",
+									display: collapsed ? "none" : "block",
+								}}
+							>
+								<label className="">Andrew Garfield</label>
+							</div>
+
+							{/* User Role*/}
+							<div
+								style={{
+									color: "white",
+									justifyContent: "center",
+									alignItems: "center",
+									paddingLeft: "60px",
+									fontSize: "10px",
+									paddingBottom: "40px",
+									display: collapsed ? "none" : "block",
+								}}
+							>
+								<label className="">FRAUD ANALYST</label>
+							</div>
+							<div className="demo-logo-vertical" />
+							{/* <Menu
 						theme="dark"
 						defaultSelectedKeys={["1"]}
 						mode="inline"
 						items={items}
-					/>
-				</Sider>
+					/> */}
+							<Menu theme="dark" mode="inline">
+								{items.map((item) => {
+									if (item) {
+										if (item.children) {
+											return (
+												<SubMenu
+													key={item.key}
+													icon={item.icon}
+													title={item.label}
+												>
+													{item.children.map((subItem) => (
+														<Menu.Item key={subItem.key}>
+															<Link to={subItem.path!}>{subItem.label}</Link>
+														</Menu.Item>
+													))}
+												</SubMenu>
+											);
+										} else {
+											return (
+												<Menu.Item key={item.key} icon={item.icon}>
+													<Link to={item.path ?? "/"}>{item.label}</Link>
+												</Menu.Item>
+											);
+										}
+									}
+								})}
+							</Menu>
+							<Link to="/" className="font-regular flex justify-around">
+								<div
+									style={{
+										// position: "fixed",
 
-				<Layout style={{ backgroundColor: "#020617" }}>
-					{/* Header */}
-					<Header style={{ padding: 0, background: "#020617" }} />
-
-					{/* Content  for Real-Time Transactions*/}
-					<Content className="margin-container">
-						<div className="flex-container">
-							<div className="flex-item">
-								<div className="card-container-0">
-									Real-Time Transactions
-									
+										// height: "48px",
+										// width: `${collapsed ? "80px" : "20%"}`,
+										color: "#9e9e9e",
+										lineHeight: "48px",
+										fontWeight: 400,
+										paddingTop: "20px",
+										paddingLeft: "60px",
+										cursor: "pointer",
+									}}
+								>
+									<i className="fi fi-rr-sign-out-alt mr-3"></i>
+									{!collapsed ? "Sign Out" : ""}
 								</div>
-							</div>
+							</Link>
+						</Sider>
 
-							{/* Column Cards */}
-							<div
-								style={{ display: "-ms-grid", justifyContent: "space-evenly" }}
-							>
-								<div className="half-width">
-									<div className="card-content">
-										Total No. of Transactions
-										<div className="large-text">{data.month}February </div>
-										<div
-											style={{
-												fontSize: "60px",
-												color: "white",
-												fontWeight: "normal",
-											}}
-										>
-											100{data.number}
-										</div>
-									</div>
-								</div>
-								<div className="half-width">
-									<div className="card-content">
-										Total No. of Flagged Transactions
-										<div className="large-text">{data.month}February </div>
-										<div
-											style={{
-												fontSize: "60px",
-												color: "white",
-												fontWeight: "normal",
-											}}
-										>
-											2{data.number}
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</Content>
-
-					{/* Content for Transactions by Type */}
-					<Content className="margin-container">
-						<div className="flex-container">
-							<div className="flex-item">
-								<div className="card-container">Transactions by Type{/* Js Charts*/}
-								<div className="mt-9 size-2 h-4">
-										<MyChart />
-									</div></div>
-								
-							</div>
-							<div className="half-width">
-								<div className="card-container">Unusual Alerts Identified</div>
-							</div>
-						</div>
-					</Content>
-
-					{/* Content for Fraud Analytics */}
-					<Content className="margin-container">
-						<div className="flex-container">
-							<div className="flex-item">
-								<div className="card-container">Fraud Analytics</div>
-							</div>
-							<div className="half-width">
-								<div className="card-container">Alert Analytics</div>
-							</div>
-						</div>
-					</Content>
+						<Routes>
+							<Route path="dashboard" element={<Dashboard />} />
+							<Route path="reports" element={<UnderConstruction />} />
+							<Route path="profile" element={<Profile />} />
+							<Route path="transactions" element={<Transactions />} />
+							<Route path="logout" element={<ModalPop />} />
+						</Routes>
+					</Layout>
 				</Layout>
-			</Layout>
-		</Layout>
-
-	</>
+			</Content>
+		</>
 	);
 };
 

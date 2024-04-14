@@ -1,0 +1,37 @@
+// Define custom color variables
+@primary-color: #1890ff; // Primary color
+@secondary-color: #f5222d; // Secondary color
+@text-color: #fff; // Text color
+@heading-color: #fff; // Heading color
+@background-color-base: #292e3c; // Background color
+@table-header-bg: #404040; // New table header background color
+@table-header-color: #fff; // Table header text color
+@table-row-hover-bg: #4d4d4d; // Table row hover background color
+@table-selected-row-bg: #595959; // Table selected row background color
+@table-selected-row-color: #fff; // Table selected row text color
+@table-border-color: #595959; // Table border color
+
+// Import the default Ant Design styles
+@import '~antd/dist/antd.less';
+
+// Override table styles
+.ant-table {
+  background-color: @background-color-base; // Table background color
+  color: @text-color; // Table text color
+  border-radius: 8px; // Border radius
+  border: 1px solid @table-border-color; // Table border
+}
+
+.ant-table-thead > tr > th {
+  background-color: @table-header-bg; // Table header background color
+  color: @table-header-color; // Table header text color
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: @table-row-hover-bg; // Table row hover background color
+}
+
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background-color: @table-selected-row-bg; // Table selected row background color
+  color: @table-selected-row-color; // Table selected row text color
+}
