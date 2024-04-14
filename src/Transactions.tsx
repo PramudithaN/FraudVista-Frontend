@@ -16,6 +16,7 @@ import { Header } from "antd/es/layout/layout";
 import axios from "axios";
 import moment, { Moment } from "moment";
 import TextArea from "antd/es/input/TextArea";
+import dayjs, { Dayjs } from "dayjs";
 
 interface TableDataItem {
 	// Add the properties of the objects here
@@ -53,7 +54,7 @@ interface Transaction {
 const Transactions = () => {
 	const [form] = Form.useForm();
 	const { RangePicker } = DatePicker;
-	const [tableData, setTableData] = useState<TableDataItem[]>([]); // replace [] with your actual data
+	const [tableData, setTableData] = useState<Transaction[]>([]); // replace [] with your actual data
 	const [filteredData, setFilteredData] = useState([]);
 	const [open, setOpen] = useState(false);
 	const [viewNotes, setViewNotes] = useState(false);
@@ -68,11 +69,15 @@ const Transactions = () => {
 	const [dataMonth, setDataMonth] = useState({ allMonth: "", number: 0 });
 	const [loading, setLoading] = useState(true);
 	// const [dateRange, setDateRange] = useState([]);
-	const [dateRange, setDateRange] = useState<[Moment | null, Moment | null]>([
+	const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([
 		null,
 		null,
 	]);
 
+	const [searchParams, setSearchParams] = useState({
+		startDate: null,
+		endDate: null,
+	});
 
 	// Layout for Form
 	const formItemLayout = {
@@ -89,6 +94,7 @@ const Transactions = () => {
 	const addNote = (note: string) => {
 		setNotes((prevNotes) => [...prevNotes, note]);
 	};
+
 	const onAddNoteButtonClick = () => {
 		// Open the modal and pass the addNote function as a prop
 		setViewModalOpen(true);
@@ -180,29 +186,26 @@ const Transactions = () => {
 			key: "flag",
 			title: "Flagged as Fraud",
 			render: (text: string, record: any) => {
-				const isFraud = fraudTransactions.includes(record.id);
-				return (
+				const isFraud = record.isFraud === "Y"; // Check if the record is marked as fraud
+				return isFraud ? (
+					<Tag style={{ cursor: "not-allowed" }} color={"red"}>
+						Flagged
+					</Tag> // Display "Flagged" in the Tag
+				) : (
 					<Tag
-						color={isFraud ? "red" : "green"}
+						color={"green"}
+						style={{ cursor: "pointer" }}
 						onClick={() => {
 							setIsModalOpen(true);
 							addNote(record);
 						}}
-						//   style={{
-						// 	cursor: "pointer",
-						// 	backgroundColor: "#4096ff",
-						// 	color: "white",
-						// 	paddingTop: "3px",
-						// 	width: "102px",
-						// 	height: "30px",
-						// 	fontSize: "15px",
-						//   }}
 					>
-						{isFraud ? "Flagged" : text}
+						Not Flagged {/* Display "Not Flagged" in the Tag */}
 					</Tag>
 				);
 			},
 		},
+
 		{
 			dataIndex: "action",
 			key: "action",
@@ -213,11 +216,10 @@ const Transactions = () => {
 						<Button
 							type="link"
 							size="small"
-							disabled={record.flag === "Flagged"}
+							disabled={record.isFraud === "N"} // Disable the button if isFraud is "N"
 							onClick={(e) => {
 								setViewModalOpen(true);
-
-								//   setSelectedRecord(record);
+								// setSelectedRecord(record);
 							}}
 						>
 							View
@@ -258,42 +260,58 @@ const Transactions = () => {
 		}
 	};
 
+	const handleDateRangeChange = (
+		dates: [Dayjs | null, Dayjs | null],
+		dateStrings: [string, string]
+	) => {
+		// Update dateRange state with selected dates
+		setDateRange(dates);
+		console.log("Selected date range:", dates);
+		console.log("Formatted date strings:", dateStrings);
+	};
+
 	const fetchData = async () => {
 		try {
-			console.log("Fetching data for date range:", dateRange);
+			// Check if both start and end dates are selected
+			if (!dateRange[0] || !dateRange[1]) {
+				console.log("Please select both start and end dates.");
+				return;
+			}
+
+			const startDate = dayjs(dateRange[0] as Dayjs);
+			const endDate = dayjs(dateRange[1] as Dayjs).endOf("day");
+
 			const response = await axios.get<Transaction[]>(
 				"http://localhost:8080/allTransaction"
 			);
-			console.log("Response Data:", response.data); // Log the response data
-			const filteredData = response.data.filter((transaction) => {
-				const transactionDate = moment(transaction.createdDate);
-				const startDate = moment(dateRange[0]);
-				const endDate = moment(dateRange[0]).endOf("day"); // Set the end date to the end of the selected day
 
-				// Check if the transaction date is within the selected date range
+			// Filter the data based on the selected date range
+			const filteredData = response.data.filter((transaction) => {
+				const transactionDate = dayjs(transaction.createdDate);
 				return (
-					transactionDate.isSameOrAfter(startDate) &&
-					transactionDate.isSameOrBefore(endDate)
+					transactionDate.isSame(startDate, "day") ||
+					(transactionDate.isAfter(startDate, "day") &&
+						(transactionDate.isSame(endDate, "day") ||
+							transactionDate.isBefore(endDate, "day")))
 				);
 			});
-			console.log("Filtered Data:", filteredData); // Log the filtered data
-			setTableData(filteredData);
+
+			setTableData(filteredData); // Update table data with filtered data
 		} catch (error) {
 			console.error("Error fetching data:", error);
 			message.error("Failed to fetch data");
 		}
 	};
+
 	useEffect(() => {
 		console.log("Date Range:", dateRange);
 		fetchData();
 	}, [dateRange]);
-	
-	const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
-		const convertedDates: [Moment | null, Moment | null] = [
-			moment(dates[0]),
-			moment(dates[1]),
-		];
-		setDateRange(convertedDates);
+
+	const handleSearch = (startDate: any, endDate: any) => {
+		// Perform your search operation using the startDate and endDate
+		// For example, you can make an API call here
+		console.log("Search with date range:", startDate, endDate);
 	};
 
 	const showModal = () => {
@@ -309,6 +327,7 @@ const Transactions = () => {
 	const handleCancel = () => {
 		setIsModalOpen(false);
 	};
+
 	return (
 		<Layout style={{ backgroundColor: "#020617" }}>
 			<Header style={{ padding: 0, background: "#020617" }} />
@@ -405,7 +424,18 @@ const Transactions = () => {
 							}
 							name="RangePicker"
 						>
-							<RangePicker
+							<div>
+								<DatePicker.RangePicker
+									value={dateRange}
+									onChange={handleDateRangeChange}
+									style={{
+										backgroundColor: "white",
+										color: "black",
+										width: "100%",
+									}}
+								/>
+							</div>
+							{/* <RangePicker
 								onChange={(dates, dateStrings) =>
 									handleDateRangeChange(dates, dateStrings)
 								}
@@ -414,7 +444,7 @@ const Transactions = () => {
 									color: "black",
 									width: "100%",
 								}}
-							/>
+							/> */}
 						</Form.Item>
 					</Col>
 				</Row>

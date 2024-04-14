@@ -74,7 +74,7 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 		}
 	}, [transactions]);
 
-	return <canvas ref={chartRef} style={{ height:"80px",width: "100px",scale:'0.7',marginTop:'-340px',marginRight:'400px'}} />;
+	return <canvas ref={chartRef} style={{position:"relative" ,height:"80px",width: "100px",scale:'0.7',marginTop:'-340px',marginRight:'400px'}} />;
 };
 
 export default CJSPie;
