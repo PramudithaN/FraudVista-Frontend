@@ -335,7 +335,6 @@ const Transactions = () => {
 										color: "white",
 										marginBottom: "5px",
 										fontSize: "20px",
-										// marginRight: "10px",
 									}}
 								>
 									Transaction ID
@@ -405,16 +404,6 @@ const Transactions = () => {
 									}}
 								/>
 							</div>
-							{/* <RangePicker
-								onChange={(dates, dateStrings) =>
-									handleDateRangeChange(dates, dateStrings)
-								}
-								style={{
-									backgroundColor: "white",
-									color: "black",
-									width: "100%",
-								}}
-							/> */}
 						</Form.Item>
 					</Col>
 				</Row>
@@ -441,19 +430,6 @@ const Transactions = () => {
 				</Form.Item>
 				<Form.Item>
 					<div
-						// style={{
-						// 	color: "white",
-						// 	// width: "15%",
-						// 	marginBottom: "40px",
-						// 	marginLeft: "250px",
-						// 	height: "40px",
-						// 	fontSize: "18px",
-						// 	paddingTop: "-100px",
-						// 	paddingLeft: "200px",
-						// 	paddingRight: "40px",
-						// 	fontWeight: "400",
-						// 	fontStyle: "italic",
-						// }}
 						style={{
 							alignItems: "center",
 							justifyContent: "center",
@@ -486,6 +462,7 @@ const Transactions = () => {
 					style={{ backgroundColor: "#f4f4f4", borderRadius: "10px" }}
 					columns={columns}
 					rowKey="id" // Set a unique key for each row
+					pagination={{ pageSize: 5 }}
 				/>
 
 				{/* Content for Transactions by Type */}

@@ -2,14 +2,14 @@ body {
 	margin: 0;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
 		"Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-		sans-serif,"Montserrat Subrayada";
+		sans-serif, "Montserrat Subrayada";
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
 
 code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New","Montserrat Subrayada",
-		monospace;
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+		"Montserrat Subrayada", monospace;
 }
 
 /* Added Montserrat Font -------------------------------------------------------*/
@@ -68,11 +68,11 @@ body::-webkit-scrollbar-thumb:hover {
 
 @media screen and (max-width: 768px) {
 	.label-container {
-	  margin-right: 0px;
-	  margin-left: 20px;
+		margin-right: 0px;
+		margin-left: 20px;
 	}
-  }
-  
+}
+
 .margin-container {
 	margin: 0 16px;
 	margin-bottom: 20px;
@@ -132,7 +132,6 @@ body::-webkit-scrollbar-thumb:hover {
 	border-radius: 10px;
 }
 
-
 .card-container-UAI {
 	padding: 24px;
 	height: 555px;
@@ -145,7 +144,7 @@ body::-webkit-scrollbar-thumb:hover {
 	border-radius: 10px;
 }
 
-.card-container-TChart{
+.card-container-TChart {
 	padding: 24px;
 	height: 450px;
 	width: 520px;
@@ -307,7 +306,7 @@ body::-webkit-scrollbar-thumb:hover {
 	border-radius: 10px;
 }
 
-.card-container-frauds{
+.card-container-frauds {
 	padding: 24px;
 	margin-bottom: 400px;
 	margin-left: 800px;
@@ -324,18 +323,17 @@ body::-webkit-scrollbar-thumb:hover {
 
 /* Reset Password Modal---------------------------------------------------------- */
 .custom-modal .ant-modal-content {
-	
-    background-color: #d1d1d1; /* Change background color */
-    color: #000; /* Change text color */
+	background-color: #d1d1d1; /* Change background color */
+	color: #000; /* Change text color */
 }
 
 .custom-modal .ant-modal-header {
-    background-color: #d1d1d1; 
-    color: #000; 
+	background-color: #d1d1d1;
+	color: #000;
 }
 
 .custom-modal .ant-modal-footer {
-    background-color: #d1d1d1; 
-    color: #000; 
+	background-color: #d1d1d1;
+	color: #000;
 }
 
