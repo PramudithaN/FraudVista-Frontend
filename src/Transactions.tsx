@@ -16,6 +16,8 @@ import { Header } from "antd/es/layout/layout";
 import axios from "axios";
 import moment, { Moment } from "moment";
 import TextArea from "antd/es/input/TextArea";
+import dayjs, { Dayjs } from "dayjs";
+import CJSPie from "./Charts/ChartjsPir";
 
 interface TableDataItem {
 	// Add the properties of the objects here
@@ -53,7 +55,7 @@ interface Transaction {
 const Transactions = () => {
 	const [form] = Form.useForm();
 	const { RangePicker } = DatePicker;
-	const [tableData, setTableData] = useState<TableDataItem[]>([]); // replace [] with your actual data
+	const [tableData, setTableData] = useState<Transaction[]>([]); // replace [] with your actual data
 	const [filteredData, setFilteredData] = useState([]);
 	const [open, setOpen] = useState(false);
 	const [viewNotes, setViewNotes] = useState(false);
@@ -68,11 +70,16 @@ const Transactions = () => {
 	const [dataMonth, setDataMonth] = useState({ allMonth: "", number: 0 });
 	const [loading, setLoading] = useState(true);
 	// const [dateRange, setDateRange] = useState([]);
-	const [dateRange, setDateRange] = useState<[Moment | null, Moment | null]>([
+	const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([
 		null,
 		null,
 	]);
+	const [searchCriteria, setSearchCriteria] = useState<string>("");
+	const [transactionsData, setTransactionsData] = useState<any[]>([]);
 
+	const handleSearchCriteriaChange = (criteria: string) => {
+		setSearchCriteria(criteria);
+	};
 
 	// Layout for Form
 	const formItemLayout = {
@@ -89,48 +96,6 @@ const Transactions = () => {
 	const addNote = (note: string) => {
 		setNotes((prevNotes) => [...prevNotes, note]);
 	};
-	const onAddNoteButtonClick = () => {
-		// Open the modal and pass the addNote function as a prop
-		setViewModalOpen(true);
-		setOpen(true);
-	};
-
-	const handleUnblock = async (record: DataItem) => {
-		try {
-			//API call to update the user's status to "ACTIVE"
-			await axios.put(`http://localhost:8080/fraud/transaction/flag`, {
-				responseDetails: notes,
-			});
-
-			message.success("Flag as Fraud successfully");
-		} catch (error) {
-			console.error("Error unblocking user:", error);
-			message.error("Failed to unblock user");
-		}
-	};
-
-	// Fraud Confirmation Modal
-	// 	const confirm = (transactionId: string) => {
-	// 		const textAreaRef = useRef();
-	// 		 Modal.confirm({
-	//     centered: true,
-	//     title: "Confirm",
-	//     icon: <ExclamationCircleOutlined />,
-	//     content: (
-	//       <div>
-	//         <p>Are you sure you want to mark this transaction as fraud?</p>
-	//         <Input.TextArea ref={textAreaRef} />
-	//       </div>
-	//     ),
-	//     onOk: (record:any) => {
-	//       const comment = textAreaRef.current?.state.value;
-	//       console.log(comment); // You can replace this line with your own logic
-	//       handleUnblock(record);
-	//       setFraudTransactions((prev) => [...prev, transactionId]);
-	//     },
-	//     cancelText: "No",
-	//   });
-	// };
 
 	const columns: any[] = [
 		{
@@ -180,29 +145,26 @@ const Transactions = () => {
 			key: "flag",
 			title: "Flagged as Fraud",
 			render: (text: string, record: any) => {
-				const isFraud = fraudTransactions.includes(record.id);
-				return (
+				const isFraud = record.isFraud === "Y"; // Check if the record is marked as fraud
+				return isFraud ? (
+					<Tag style={{ cursor: "not-allowed" }} color={"red"}>
+						Flagged
+					</Tag> // Display "Flagged" in the Tag
+				) : (
 					<Tag
-						color={isFraud ? "red" : "green"}
+						color={"green"}
+						style={{ cursor: "pointer" }}
 						onClick={() => {
 							setIsModalOpen(true);
 							addNote(record);
 						}}
-						//   style={{
-						// 	cursor: "pointer",
-						// 	backgroundColor: "#4096ff",
-						// 	color: "white",
-						// 	paddingTop: "3px",
-						// 	width: "102px",
-						// 	height: "30px",
-						// 	fontSize: "15px",
-						//   }}
 					>
-						{isFraud ? "Flagged" : text}
+						Not Flagged {/* Display "Not Flagged" in the Tag */}
 					</Tag>
 				);
 			},
 		},
+
 		{
 			dataIndex: "action",
 			key: "action",
@@ -213,11 +175,10 @@ const Transactions = () => {
 						<Button
 							type="link"
 							size="small"
-							disabled={record.flag === "Flagged"}
+							disabled={record.isFraud === "N"} // Disable the button if isFraud is "N"
 							onClick={(e) => {
 								setViewModalOpen(true);
-
-								//   setSelectedRecord(record);
+								// setSelectedRecord(record);
 							}}
 						>
 							View
@@ -234,6 +195,7 @@ const Transactions = () => {
 			const result = await axios(
 				`http://localhost:8080/transaction/customer/${customerId}`
 			);
+			setTransactionsData(result.data);
 			setTableData(result.data);
 		} catch (error) {
 			console.error(
@@ -258,57 +220,80 @@ const Transactions = () => {
 		}
 	};
 
+	const handleDateRangeChange = (
+		dates: [Dayjs | null, Dayjs | null],
+		dateStrings: [string, string]
+	) => {
+		// Update dateRange state with selected dates
+		setDateRange(dates);
+		console.log("Selected date range:", dates);
+		console.log("Formatted date strings:", dateStrings);
+	};
+
 	const fetchData = async () => {
 		try {
-			console.log("Fetching data for date range:", dateRange);
+			// Check if both start and end dates are selected
+			if (!dateRange[0] || !dateRange[1]) {
+				console.log("Please select both start and end dates.");
+				return;
+			}
+
+			const startDate = dayjs(dateRange[0] as Dayjs);
+			const endDate = dayjs(dateRange[1] as Dayjs).endOf("day");
+
 			const response = await axios.get<Transaction[]>(
 				"http://localhost:8080/allTransaction"
 			);
-			console.log("Response Data:", response.data); // Log the response data
-			const filteredData = response.data.filter((transaction) => {
-				const transactionDate = moment(transaction.createdDate);
-				const startDate = moment(dateRange[0]);
-				const endDate = moment(dateRange[0]).endOf("day"); // Set the end date to the end of the selected day
 
-				// Check if the transaction date is within the selected date range
+			// Filter the data based on the selected date range
+			const filteredData = response.data.filter((transaction) => {
+				const transactionDate = dayjs(transaction.createdDate);
 				return (
-					transactionDate.isSameOrAfter(startDate) &&
-					transactionDate.isSameOrBefore(endDate)
+					transactionDate.isSame(startDate, "day") ||
+					(transactionDate.isAfter(startDate, "day") &&
+						(transactionDate.isSame(endDate, "day") ||
+							transactionDate.isBefore(endDate, "day")))
 				);
 			});
-			console.log("Filtered Data:", filteredData); // Log the filtered data
-			setTableData(filteredData);
+
+			setTableData(filteredData); // Update table data with filtered data
 		} catch (error) {
 			console.error("Error fetching data:", error);
 			message.error("Failed to fetch data");
 		}
 	};
+
 	useEffect(() => {
 		console.log("Date Range:", dateRange);
 		fetchData();
 	}, [dateRange]);
-	
-	const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
-		const convertedDates: [Moment | null, Moment | null] = [
-			moment(dates[0]),
-			moment(dates[1]),
-		];
-		setDateRange(convertedDates);
-	};
 
-	const showModal = () => {
-		setIsModalOpen(true);
-	};
+	const handleOk = async (record: any) => {
+		try {
+			// Make the API call to update the transaction as fraud
+			await axios.put(`http://localhost:8080/fraud/transaction/flag`, {
+				transactionId: record.id,
+				fraudTransactionDetailResponses: notes, // Pass the notes entered by the user
+			});
 
-	const handleOk = (record: any) => {
-		handleUnblock(record);
+			// Update the state or perform any necessary actions
+			setFraudTransactions((prev) => [...prev, record.id]);
+			message.success("Transaction marked as fraud successfully");
+			setIsModalOpen(false); // Close the modal
+		} catch (error) {
+			console.error("Error marking transaction as fraud:", error);
+			message.error("Failed to mark transaction as fraud");
+		}
+		// handleUnblock(record);
 		setFraudTransactions((prev) => [...prev, transactionId]);
 		setIsModalOpen(false);
 	};
+	console.log("Notes:", notes);
 
 	const handleCancel = () => {
 		setIsModalOpen(false);
 	};
+
 	return (
 		<Layout style={{ backgroundColor: "#020617" }}>
 			<Header style={{ padding: 0, background: "#020617" }} />
@@ -321,10 +306,13 @@ const Transactions = () => {
 						const { TransactionId, CustomerId } = values;
 						if (TransactionId) {
 							searchByTransactionID(TransactionId);
+							handleSearchCriteriaChange("TransactionId");
 						} else if (CustomerId) {
 							searchByCustomerID(CustomerId);
+							handleSearchCriteriaChange("CustomerId");
 						} else if (dateRange) {
 							fetchData();
+							handleSearchCriteriaChange("DateRange");
 						}
 						form.resetFields();
 					}
@@ -347,7 +335,6 @@ const Transactions = () => {
 										color: "white",
 										marginBottom: "5px",
 										fontSize: "20px",
-										marginRight: "10px",
 									}}
 								>
 									Transaction ID
@@ -360,6 +347,7 @@ const Transactions = () => {
 									backgroundColor: "white",
 									color: "black",
 									width: "100%",
+									// marginLeft: "10px",
 								}}
 							/>
 						</Form.Item>
@@ -405,16 +393,17 @@ const Transactions = () => {
 							}
 							name="RangePicker"
 						>
-							<RangePicker
-								onChange={(dates, dateStrings) =>
-									handleDateRangeChange(dates, dateStrings)
-								}
-								style={{
-									backgroundColor: "white",
-									color: "black",
-									width: "100%",
-								}}
-							/>
+							<div>
+								<DatePicker.RangePicker
+									value={dateRange}
+									onChange={handleDateRangeChange}
+									style={{
+										backgroundColor: "white",
+										color: "black",
+										width: "100%",
+									}}
+								/>
+							</div>
 						</Form.Item>
 					</Col>
 				</Row>
@@ -439,83 +428,66 @@ const Transactions = () => {
 						Search
 					</Button>
 				</Form.Item>
-				<div
-					style={{
-						color: "white",
-						// width: "15%",
-						marginBottom: "40px",
-						marginLeft: "250px",
-						height: "40px",
-						fontSize: "18px",
-						paddingTop: "-100px",
-						paddingLeft: "200px",
-						paddingRight: "40px",
-						fontWeight: "400",
-						fontStyle: "italic",
-					}}
-				>
-					<Tag
+				<Form.Item>
+					<div
 						style={{
-							color: "#4096ff",
-							backgroundColor: "#292e3c",
-							borderColor: "#434b62",
-							stroke: "#292e3c",
-							height: "40px",
-							fontSize: "18px",
-							paddingTop: "8px",
-							fontWeight: "400",
-							fontStyle: "italic",
+							alignItems: "center",
+							justifyContent: "center",
+							display: "flex",
+							marginLeft: "540px",
+							marginTop: "20px",
 						}}
 					>
-						Please search using any of the above criteria to inquire transaction
-						details.
-					</Tag>
-				</div>
-
+						<Tag
+							style={{
+								color: "#4096ff",
+								backgroundColor: "#292e3c",
+								borderColor: "#434b62",
+								stroke: "#292e3c",
+								height: "40px",
+								fontSize: "18px",
+								paddingTop: "8px",
+								fontWeight: "400",
+								fontStyle: "italic",
+							}}
+						>
+							Please search using any of the above criteria to inquire
+							transaction details.
+						</Tag>
+					</div>
+				</Form.Item>
 				{/* <TableComponent /> */}
 				<Table
 					dataSource={tableData}
 					style={{ backgroundColor: "#f4f4f4", borderRadius: "10px" }}
 					columns={columns}
 					rowKey="id" // Set a unique key for each row
+					pagination={{ pageSize: 5 }}
 				/>
 
 				{/* Content for Transactions by Type */}
-				<div className="flex-item" style={{ marginTop: "50px" }}>
-					<div className="card-container">
-						Transactions by Type
-						<div className="mt-9 size-2 h-4">{/* <PieChart /> */}</div>
-					</div>
-				</div>
-
-				{/* Add Notes */}
-				{/* <Modal
-					title="Add Notes"
-					centered
-					open={open}
-					onOk={() => setOpen(false)}
-					onCancel={() => setOpen(false)}
-					width={500}
-					style={{ color: "white" }}
-					className="custom-modal"
-				>
-					<Row gutter={16}>
-						<Form.Item name={["addNotes", "introduction"]}>
-							<TextArea
-								rows={4}
-								placeholder="Add your Notes here..."
-								maxLength={250}
+				{searchCriteria === "CustomerId" && (
+					<div
+						className="flex-item"
+						style={{ marginTop: "50px", marginBottom: "30px" }}
+					>
+						<div className="card-container-TChart">
+							Transactions by Type
+							<div
+								className="mt-9 size-2 h-4"
 								style={{
-									width: "600px",
-									paddingTop: "20px",
-									marginTop: "20px",
-									paddingBottom: "-10px",
-									marginLeft: "50px",
+									scale: "0.9",
+									marginTop: "-80px",
+									paddingTop: "100px",
+									paddingLeft: "50px",
+									// marginBottom: "-180px",
 								}}
-							/>
-						</Form.Item>
-					</Row>
-				</Modal> */}
+							>
+								<CJSPie transactions={transactionsData} />
+							</div>
+						</div>
+					</div>
+				)}
 
 				{/* View Notes */}
 				<Modal
