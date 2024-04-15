@@ -160,71 +160,23 @@ const Dashboard = () => {
 				</Content>
 
 				<Content className="margin-container">
-					<div className="flex-container">
-						{/* Content for Transactions by Type */}
+				<div className="flex-container">
+						{/* Content for Fraud Analytics */}
 						<div className="flex-item">
-							<div className="card-container-TBT">
+							<div className="card-container">
 								Transactions by Type
-								<div
-									className="TopofPie"
-									style={{ marginLeft: "650px", marginTop: "100px" }}
-								>
-									{Object.keys(transactionTypes).map((type) => (
-										<div key={type}>
-											<label style={{ marginTop: "150px" }}>{type}</label>
-											<div>
-												<Progress
-													trailColor="#2e3037"
-													strokeColor="#ff6358"
-													percent={(transactionTypes[type] / data.number) * 100} // Calculate progress based on type count and total number of transactions
-													size={[400, 30]}
-													style={{
-														marginTop: "10px",
-														borderRadius: "5px",
-														width: "400px",
-														color: "white",
-													}}
-													format={(percent) => (
-														<span style={{ color: "white" }}>{percent}%</span>
-													)}
-												/>
-											</div>
-										</div>
-									))}
-									{/* Display Utility Payment progress bar */}
-									<div>
-										<label style={{ marginTop: "150px" }}>
-											Utility Payment
-										</label>
-										<div>
-											<Progress
-												trailColor="#2e3037"
-												strokeColor="#ff6358"
-												percent={(utilityPaymentAmount / data.number) * 100} // Calculate progress based on Utility Payment amount and total number of transactions
-												size={[400, 30]}
-												style={{
-													marginTop: "10px",
-													borderRadius: "5px",
-													width: "400px",
-													color: "white",
-												}}
-												format={(percent) => (
-													<span style={{ color: "white" }}>{percent}%</span>
-												)}
-											/>
-										</div>
-									</div>
-								</div>
-								<div className="mt-9 size-2 h-4">
+								<div className="mt-9 size-2 h-4" style={{scale:'0.7',marginTop:'-80px',marginBottom:'-80px'}}>
 									<CJSPie transactions={transactionsData} />
 								</div>
 							</div>
 						</div>
 						{/* Content for Unusual Alerts Identified */}
 						<div className="half-width">
-							<div className="card-container-UAI">
+							<div className="card-container">
 								Unusual Alerts Identified
-								<div style={{ marginTop: "40px" }}>
+								<div 
+								style={{ marginTop: "40px" }}
+								>
 									{transactionsData
 										.slice(-6) // Get the last 6 transactions
 										.filter((transaction) => transaction.isFraud === "Y") // Filter out transactions where isFraud is not 'Y'

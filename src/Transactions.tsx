@@ -17,6 +17,7 @@ import axios from "axios";
 import moment, { Moment } from "moment";
 import TextArea from "antd/es/input/TextArea";
 import dayjs, { Dayjs } from "dayjs";
+import CJSPie from "./Charts/ChartjsPir";
 
 interface TableDataItem {
 	// Add the properties of the objects here
@@ -73,11 +74,12 @@ const Transactions = () => {
 		null,
 		null,
 	]);
+	const [searchCriteria, setSearchCriteria] = useState<string>("");
+	const [transactionsData, setTransactionsData] = useState<any[]>([]);
 
-	const [searchParams, setSearchParams] = useState({
-		startDate: null,
-		endDate: null,
-	});
+	const handleSearchCriteriaChange = (criteria: string) => {
+		setSearchCriteria(criteria);
+	};
 
 	// Layout for Form
 	const formItemLayout = {
@@ -94,49 +96,6 @@ const Transactions = () => {
 	const addNote = (note: string) => {
 		setNotes((prevNotes) => [...prevNotes, note]);
 	};
-
-	const onAddNoteButtonClick = () => {
-		// Open the modal and pass the addNote function as a prop
-		setViewModalOpen(true);
-		setOpen(true);
-	};
-
-	const handleUnblock = async (record: DataItem) => {
-		try {
-			//API call to update the user's status to "ACTIVE"
-			await axios.put(`http://localhost:8080/fraud/transaction/flag`, {
-				responseDetails: notes,
-			});
-
-			message.success("Flag as Fraud successfully");
-		} catch (error) {
-			console.error("Error unblocking user:", error);
-			message.error("Failed to unblock user");
-		}
-	};
-
-	// Fraud Confirmation Modal
-	// 	const confirm = (transactionId: string) => {
-	// 		const textAreaRef = useRef();
-	// 		 Modal.confirm({
-	//     centered: true,
-	//     title: "Confirm",
-	//     icon: <ExclamationCircleOutlined />,
-	//     content: (
-	//       <div>
-	//         <p>Are you sure you want to mark this transaction as fraud?</p>
-	//         <Input.TextArea ref={textAreaRef} />
-	//       </div>
-	//     ),
-	//     onOk: (record:any) => {
-	//       const comment = textAreaRef.current?.state.value;
-	//       console.log(comment); // You can replace this line with your own logic
-	//       handleUnblock(record);
-	//       setFraudTransactions((prev) => [...prev, transactionId]);
-	//     },
-	//     cancelText: "No",
-	//   });
-	// };
 
 	const columns: any[] = [
 		{
@@ -236,6 +195,7 @@ const Transactions = () => {
 			const result = await axios(
 				`http://localhost:8080/transaction/customer/${customerId}`
 			);
+			setTransactionsData(result.data);
 			setTableData(result.data);
 		} catch (error) {
 			console.error(
@@ -308,21 +268,27 @@ const Transactions = () => {
 		fetchData();
 	}, [dateRange]);
 
-	const handleSearch = (startDate: any, endDate: any) => {
-		// Perform your search operation using the startDate and endDate
-		// For example, you can make an API call here
-		console.log("Search with date range:", startDate, endDate);
-	};
+	const handleOk = async (record: any) => {
+		try {
+			// Make the API call to update the transaction as fraud
+			await axios.put(`http://localhost:8080/fraud/transaction/flag`, {
+				transactionId: record.id,
+				fraudTransactionDetailResponses: notes, // Pass the notes entered by the user
+			});
 
-	const showModal = () => {
-		setIsModalOpen(true);
-	};
-
-	const handleOk = (record: any) => {
-		handleUnblock(record);
+			// Update the state or perform any necessary actions
+			setFraudTransactions((prev) => [...prev, record.id]);
+			message.success("Transaction marked as fraud successfully");
+			setIsModalOpen(false); // Close the modal
+		} catch (error) {
+			console.error("Error marking transaction as fraud:", error);
+			message.error("Failed to mark transaction as fraud");
+		}
+		// handleUnblock(record);
 		setFraudTransactions((prev) => [...prev, transactionId]);
 		setIsModalOpen(false);
 	};
+	console.log("Notes:", notes);
 
 	const handleCancel = () => {
 		setIsModalOpen(false);
@@ -340,10 +306,13 @@ const Transactions = () => {
 						const { TransactionId, CustomerId } = values;
 						if (TransactionId) {
 							searchByTransactionID(TransactionId);
+							handleSearchCriteriaChange("TransactionId");
 						} else if (CustomerId) {
 							searchByCustomerID(CustomerId);
+							handleSearchCriteriaChange("CustomerId");
 						} else if (dateRange) {
 							fetchData();
+							handleSearchCriteriaChange("DateRange");
 						}
 						form.resetFields();
 					}
@@ -366,7 +335,7 @@ const Transactions = () => {
 										color: "white",
 										marginBottom: "5px",
 										fontSize: "20px",
-										marginRight: "10px",
+										// marginRight: "10px",
 									}}
 								>
 									Transaction ID
@@ -379,6 +348,7 @@ const Transactions = () => {
 									backgroundColor: "white",
 									color: "black",
 									width: "100%",
+									// marginLeft: "10px",
 								}}
 							/>
 						</Form.Item>
@@ -469,39 +439,47 @@ const Transactions = () => {
 						Search
 					</Button>
 				</Form.Item>
-				<div
-					style={{
-						color: "white",
-						// width: "15%",
-						marginBottom: "40px",
-						marginLeft: "250px",
-						height: "40px",
-						fontSize: "18px",
-						paddingTop: "-100px",
-						paddingLeft: "200px",
-						paddingRight: "40px",
-						fontWeight: "400",
-						fontStyle: "italic",
-					}}
-				>
-					<Tag
+				<Form.Item>
+					<div
+						// style={{
+						// 	color: "white",
+						// 	// width: "15%",
+						// 	marginBottom: "40px",
+						// 	marginLeft: "250px",
+						// 	height: "40px",
+						// 	fontSize: "18px",
+						// 	paddingTop: "-100px",
+						// 	paddingLeft: "200px",
+						// 	paddingRight: "40px",
+						// 	fontWeight: "400",
+						// 	fontStyle: "italic",
+						// }}
 						style={{
-							color: "#4096ff",
-							backgroundColor: "#292e3c",
-							borderColor: "#434b62",
-							stroke: "#292e3c",
-							height: "40px",
-							fontSize: "18px",
-							paddingTop: "8px",
-							fontWeight: "400",
-							fontStyle: "italic",
+							alignItems: "center",
+							justifyContent: "center",
+							display: "flex",
+							marginLeft: "540px",
+							marginTop: "20px",
 						}}
 					>
-						Please search using any of the above criteria to inquire transaction
-						details.
-					</Tag>
-				</div>
-
+						<Tag
+							style={{
+								color: "#4096ff",
+								backgroundColor: "#292e3c",
+								borderColor: "#434b62",
+								stroke: "#292e3c",
+								height: "40px",
+								fontSize: "18px",
+								paddingTop: "8px",
+								fontWeight: "400",
+								fontStyle: "italic",
+							}}
+						>
+							Please search using any of the above criteria to inquire
+							transaction details.
+						</Tag>
+					</div>
+				</Form.Item>
 				{/* <TableComponent /> */}
 				<Table
 					dataSource={tableData}
@@ -511,41 +489,28 @@ const Transactions = () => {
 				/>
 
 				{/* Content for Transactions by Type */}
-				<div className="flex-item" style={{ marginTop: "50px" }}>
-					<div className="card-container">
-						Transactions by Type
-						<div className="mt-9 size-2 h-4">{/* <PieChart /> */}</div>
-					</div>
-				</div>
-
-				{/* Add Notes */}
-				{/* <Modal
-					title="Add Notes"
-					centered
-					open={open}
-					onOk={() => setOpen(false)}
-					onCancel={() => setOpen(false)}
-					width={500}
-					style={{ color: "white" }}
-					className="custom-modal"
-				>
-					<Row gutter={16}>
-						<Form.Item name={["addNotes", "introduction"]}>
-							<TextArea
-								rows={4}
-								placeholder="Add your Notes here..."
-								maxLength={250}
+				{searchCriteria === "CustomerId" && (
+					<div
+						className="flex-item"
+						style={{ marginTop: "50px", marginBottom: "30px" }}
+					>
+						<div className="card-container-TChart">
+							Transactions by Type
+							<div
+								className="mt-9 size-2 h-4"
 								style={{
-									width: "600px",
-									paddingTop: "20px",
-									marginTop: "20px",
-									paddingBottom: "-10px",
-									marginLeft: "50px",
+									scale: "0.9",
+									marginTop: "-80px",
+									paddingTop: "100px",
+									paddingLeft: "50px",
+									// marginBottom: "-180px",
 								}}
-							/>
-						</Form.Item>
-					</Row>
-				</Modal> */}
+							>
+								<CJSPie transactions={transactionsData} />
+							</div>
+						</div>
+					</div>
+				)}
 
 				{/* View Notes */}
 				<Modal
