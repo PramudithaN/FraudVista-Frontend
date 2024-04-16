@@ -116,9 +116,9 @@ const Transactions = () => {
 			dataIndex: "amount",
 			key: "amount",
 			title: "Amount",
-			align: "right",
+			align: "left",
 			render: (text: any) => (
-				<p style={{ textAlign: "right" }}>
+				<p style={{ textAlign: "left" }}>
 					{text
 						? parseFloat(text).toLocaleString(undefined, {
 								minimumFractionDigits: 2,
