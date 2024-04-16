@@ -259,7 +259,7 @@ const Transactions = () => {
 			setTableData(filteredData); // Update table data with filtered data
 		} catch (error) {
 			console.error("Error fetching data:", error);
-			message.error("Failed to fetch data");
+			// message.error("Failed to fetch data");
 		}
 	};
 
@@ -472,19 +472,24 @@ const Transactions = () => {
 						style={{ marginTop: "50px", marginBottom: "30px" }}
 					>
 						<div className="card-container-TChart">
-							Transactions by Type
-							<div
-								className="mt-9 size-2 h-4"
-								style={{
-									scale: "0.9",
-									marginTop: "-80px",
-									paddingTop: "100px",
-									paddingLeft: "50px",
-									// marginBottom: "-180px",
-								}}
-							>
-								<CJSPie transactions={transactionsData} />
-							</div>
+							{tableData.length === 0 ? (
+								<p style={{ marginLeft: "140px" }}>No data available</p>
+							) : (
+								<>
+									Transactions by Type
+									<div
+										className="mt-9 size-2 h-4"
+										style={{
+											scale: "0.9",
+											marginTop: "-100px",
+											paddingTop: "100px",
+											paddingLeft: "50px",
+										}}
+									>
+										<CJSPie transactions={transactionsData} />
+									</div>
+								</>
+							)}
 						</div>
 					</div>
 				)}

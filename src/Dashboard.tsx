@@ -13,6 +13,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import CJSPie from "./Charts/ChartjsPir";
 import LineChart from "./Charts/LineChart";
+import LineData from "./Charts/LineData";
 
 interface Transaction {
 	createdDate: string;
@@ -102,7 +103,9 @@ const Dashboard = () => {
 				<Content className="margin-container">
 					<div className="flex-container">
 						<div className="flex-item">
-							<div className="card-container-0">Real-Time Transactions</div>
+							<div className="card-container-0">Real-Time Transactions
+						<div style={{backgroundColor:'fff'}}>	<LineData/></div>
+							</div>
 						</div>
 
 						{/* Column Cards */}
@@ -165,7 +168,7 @@ const Dashboard = () => {
 						<div className="flex-item">
 							<div className="card-container">
 								Transactions by Type
-								<div className="mt-9 size-2 h-4" style={{scale:'0.7',marginTop:'-80px',marginBottom:'-80px'}}>
+								<div className="mt-9" style={{scale:'0.65',marginTop:'-80px',marginBottom:'-80px',marginLeft:'150px'}}>
 									<CJSPie transactions={transactionsData} />
 								</div>
 							</div>
