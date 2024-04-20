@@ -6,6 +6,7 @@ import {
 	Input,
 	Layout,
 	Modal,
+	Select,
 	Table,
 	Tag,
 	message,
@@ -18,11 +19,7 @@ import moment, { Moment } from "moment";
 import TextArea from "antd/es/input/TextArea";
 import dayjs, { Dayjs } from "dayjs";
 import CJSPie from "./Charts/ChartjsPir";
-
-interface TableDataItem {
-	// Add the properties of the objects here
-	[key: string]: any; // Use this line if the object's properties are dynamic
-}
+import { set } from "@antv/util";
 
 interface TransactionDetails {
 	remark: string;
@@ -59,31 +56,20 @@ interface Transaction {
 	flag: string;
 }
 
-// const TableComponent = () => {
 const Transactions = () => {
 	const [form] = Form.useForm();
 	const { RangePicker } = DatePicker;
-	const [tableData, setTableData] = useState<Transaction[]>([]); // replace [] with your actual data
-	const [filteredData, setFilteredData] = useState([]);
-	const [open, setOpen] = useState(false);
-	const [viewNotes, setViewNotes] = useState(false);
-	const [notes, setNotes] = useState<string[]>([]);
-	const [customerId, setCustomerId] = useState("");
+	const [tableData, setTableData] = useState<Transaction[]>([]);
 	const [transactionId, setTransactionId] = useState("");
-	const [fraudTransactions, setFraudTransactions] = useState<string[]>([]);
 	const [viewModalOpen, setViewModalOpen] = useState(false);
-	const [data, setData] = useState<DataItem[]>([]);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [isTextAreaEmpty, setIsTextAreaEmpty] = useState(true);
-	const [dataMonth, setDataMonth] = useState({ allMonth: "", number: 0 });
-	const [loading, setLoading] = useState(true);
-	// const [dateRange, setDateRange] = useState([]);
 	const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([
 		null,
 		null,
 	]);
 	const [searchCriteria, setSearchCriteria] = useState<string>("");
 	const [transactionsData, setTransactionsData] = useState<any[]>([]);
+	const [selectedCustomerId, setSelectedCustomerId] = useState("");
 
 	const handleSearchCriteriaChange = (criteria: string) => {
 		setSearchCriteria(criteria);
@@ -91,6 +77,14 @@ const Transactions = () => {
 
 	const [transactionDetails, setTransactionDetails] =
 		useState<TransactionDetails | null>(null);
+
+	//Add Notes States
+	const { Option } = Select;
+	const { TextArea } = Input;
+	const [addNotesModalVisible, setAddNotesModalVisible] = useState(false);
+	const [selectedRule, setSelectedRule] = useState("");
+	const [remark, setRemark] = useState("");
+	const [fraudStatus, setFraudStatus] = useState("");
 
 	// Layout for Form
 	const formItemLayout = {
@@ -104,10 +98,7 @@ const Transactions = () => {
 		},
 	};
 
-	const addNote = (note: string) => {
-		setNotes((prevNotes) => [...prevNotes, note]);
-	};
-
+	//Table Columns
 	const columns: any[] = [
 		{
 			dataIndex: "id",
@@ -169,7 +160,8 @@ const Transactions = () => {
 						style={{ cursor: "pointer" }}
 						onClick={() => {
 							setIsModalOpen(true);
-							addNote(record);
+							handleNotFlaggedClick(record.id);
+							console.log(record.id, "record.id", record, "record");
 						}}
 					>
 						Not Flagged {/* Display "Not Flagged" in the Tag */}
@@ -210,6 +202,7 @@ const Transactions = () => {
 			);
 			setTransactionsData(result.data);
 			setTableData(result.data);
+			setSelectedCustomerId(customerId);
 		} catch (error) {
 			console.error(
 				"Error occurred while fetching data by Customer ID: ",
@@ -233,16 +226,16 @@ const Transactions = () => {
 		}
 	};
 
+	// Handler for date range change
 	const handleDateRangeChange = (
 		dates: [Dayjs | null, Dayjs | null],
 		dateStrings: [string, string]
 	) => {
 		// Update dateRange state with selected dates
 		setDateRange(dates);
-		console.log("Selected date range:", dates);
-		console.log("Formatted date strings:", dateStrings);
 	};
 
+	// API get all transactions
 	const fetchData = async () => {
 		try {
 			// Check if both start and end dates are selected
@@ -272,40 +265,13 @@ const Transactions = () => {
 			setTableData(filteredData); // Update table data with filtered data
 		} catch (error) {
 			console.error("Error fetching data:", error);
-			// message.error("Failed to fetch data");
 		}
 	};
 
+	// Fetch data on date range change
 	useEffect(() => {
-		console.log("Date Range:", dateRange);
 		fetchData();
 	}, [dateRange]);
-
-	const handleOk = async (record: any) => {
-		try {
-			// Make the API call to update the transaction as fraud
-			await axios.put(`http://localhost:8080/fraud/transaction/flag`, {
-				transactionId: record.id,
-				fraudTransactionDetailResponses: notes, // Pass the notes entered by the user
-			});
-
-			// Update the state or perform any necessary actions
-			setFraudTransactions((prev) => [...prev, record.id]);
-			message.success("Transaction marked as fraud successfully");
-			setIsModalOpen(false); // Close the modal
-		} catch (error) {
-			console.error("Error marking transaction as fraud:", error);
-			message.error("Failed to mark transaction as fraud");
-		}
-		// handleUnblock(record);
-		setFraudTransactions((prev) => [...prev, transactionId]);
-		setIsModalOpen(false);
-	};
-	console.log("Notes:", notes);
-
-	const handleCancel = () => {
-		setIsModalOpen(false);
-	};
 
 	// API to fetch View Notes
 	const fetchTransactionDetails = async (transactionId: any) => {
@@ -325,6 +291,53 @@ const Transactions = () => {
 	// Handler for view button click
 	const handleViewDetails = (transactionId: any) => {
 		fetchTransactionDetails(transactionId);
+	};
+
+	// Handler for not flagged button click
+	const handleNotFlaggedClick = (record: any) => {
+		setTransactionId(record);
+		setAddNotesModalVisible(true);
+	};
+
+	//Refresh data from all APIs
+	const fetchDataFromAllApis = async () => {
+		try {
+			// Fetch data by Customer ID
+			if (searchCriteria === "CustomerId") {
+				await searchByCustomerID(selectedCustomerId); // Use the stored customer ID
+			}
+			// Fetch data by Transaction ID
+			else if (searchCriteria === "TransactionId") {
+				await searchByTransactionID(transactionId);
+			}
+			// Fetch all transactions
+			else if (searchCriteria === "DateRange") {
+				await fetchData();
+			}
+		} catch (error) {
+			console.error("Error fetching data from all APIs:", error);
+		}
+	};
+
+	//Api to mark transaction as fraud
+	const handleAddNotes = async () => {
+		try {
+			await axios.put("http://localhost:8080/fraud/transaction/flag", {
+				transactionId: transactionId,
+				fraudRule: selectedRule,
+				remark: remark,
+				severity: "H",
+				flag: "Y",
+				modifiedBy: "lakshika",
+			});
+			setFraudStatus("Y");
+			setAddNotesModalVisible(false);
+
+			// Fetch data from all APIs after adding notes
+			fetchDataFromAllApis();
+		} catch (error) {
+			console.error("Error marking transaction as fraud:", error);
+		}
 	};
 
 	return (
@@ -441,6 +454,7 @@ const Transactions = () => {
 					</Col>
 				</Row>
 
+				{/* Search Button */}
 				<Form.Item wrapperCol={{ offset: 6, span: 16 }}>
 					<Button
 						type="primary"
@@ -461,6 +475,7 @@ const Transactions = () => {
 						Search
 					</Button>
 				</Form.Item>
+			
 				<Form.Item>
 					<div
 						style={{
@@ -530,6 +545,7 @@ const Transactions = () => {
 				{/* View Notes */}
 				<Modal
 					title="View Notes"
+					width={650}
 					visible={viewModalOpen}
 					onCancel={() => setViewModalOpen(false)}
 					footer={null}
@@ -563,31 +579,55 @@ const Transactions = () => {
 					</Form>
 				</Modal>
 
-				{/* Fraud Confirmation Modal */}
+				{/* Add Notes Modal */}
 				<Modal
-					title="Are you sure you want to mark this transaction as fraud?"
-					open={isModalOpen}
-					onOk={handleOk}
-					onCancel={handleCancel}
+					title="Add Notes"
+					width={650}
+					visible={addNotesModalVisible}
+					onCancel={() => setAddNotesModalVisible(false)}
+					footer={[
+						<Button key="back" onClick={() => setAddNotesModalVisible(false)}>
+							Cancel
+						</Button>,
+						<Button key="submit" type="primary" onClick={handleAddNotes}>
+							Add
+						</Button>,
+					]}
 				>
-					{" "}
-					<Row gutter={16}>
-						<Form.Item name={["addNotes", "introduction"]}>
+					<Form>
+						<Form.Item label="Fraud Rule">
+							<Select
+								value={selectedRule}
+								onChange={(value) => setSelectedRule(value)}
+							>
+								<Option value="1">Daily transaction amount has exceeded</Option>
+								<Option value="2">
+									Abnormal transaction count with the same amount
+								</Option>
+								<Option value="3">
+									Abnormal transaction frequency in x period of time
+								</Option>
+								<Option value="4">
+									Abnormal transaction count for a specific customer
+								</Option>
+
+								<Option value="5">
+									Abnormal transaction count for a specific customer outside
+									peak hours
+								</Option>
+								<Option value="6">
+									Multiple declined txn in x amount of time
+								</Option>
+							</Select>
+						</Form.Item>
+						<Form.Item label="Remark">
 							<TextArea
 								rows={4}
-								placeholder="Add your Notes here..."
-								maxLength={250}
-								style={{
-									width: "600px",
-									paddingTop: "20px",
-									marginTop: "20px",
-									paddingBottom: "-10px",
-									marginLeft: "50px",
-								}}
-								// onChange={(e) => setNotes(e.target.value)}
+								value={remark}
+								onChange={(e) => setRemark(e.target.value)}
 							/>
 						</Form.Item>
-					</Row>
+					</Form>
 				</Modal>
 			</Form>
 			<FloatButton.BackTop />
