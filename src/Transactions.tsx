@@ -24,6 +24,14 @@ interface TableDataItem {
 	[key: string]: any; // Use this line if the object's properties are dynamic
 }
 
+interface TransactionDetails {
+	remark: string;
+	severity: string;
+	fraudRule: string;
+	ruleDescription: string;
+	transactionId: string;
+}
+
 interface DataItem {
 	id?: number;
 	email: string;
@@ -80,6 +88,9 @@ const Transactions = () => {
 	const handleSearchCriteriaChange = (criteria: string) => {
 		setSearchCriteria(criteria);
 	};
+
+	const [transactionDetails, setTransactionDetails] =
+		useState<TransactionDetails | null>(null);
 
 	// Layout for Form
 	const formItemLayout = {
@@ -177,10 +188,10 @@ const Transactions = () => {
 						<Button
 							type="link"
 							size="small"
-							disabled={record.isFraud === "N"} // Disable the button if isFraud is "N"
+							disabled={record.isFraud === "N" || record.isFraud === null} // Disable the button if isFraud is "N"
 							onClick={(e) => {
 								setViewModalOpen(true);
-								// setSelectedRecord(record);
+								handleViewDetails(record.id);
 							}}
 						>
 							View
@@ -294,6 +305,26 @@ const Transactions = () => {
 
 	const handleCancel = () => {
 		setIsModalOpen(false);
+	};
+
+	// API to fetch View Notes
+	const fetchTransactionDetails = async (transactionId: any) => {
+		try {
+			const response = await axios.get(
+				`http://localhost:8080/viewDetails/${transactionId}`
+			);
+			setTransactionDetails(response.data);
+			console.log(response.data, "response.data");
+
+			setViewModalOpen(true); // Open the view modal after fetching data
+		} catch (error) {
+			console.error("Error fetching transaction details:", error);
+		}
+	};
+
+	// Handler for view button click
+	const handleViewDetails = (transactionId: any) => {
+		fetchTransactionDetails(transactionId);
 	};
 
 	return (
@@ -499,31 +530,37 @@ const Transactions = () => {
 				{/* View Notes */}
 				<Modal
 					title="View Notes"
-					centered
-					open={viewNotes}
-					onOk={() => setViewNotes(false)}
-					onCancel={() => setViewNotes(false)}
-					width={500}
-					style={{ color: "white" }}
-					className="custom-modal"
+					visible={viewModalOpen}
+					onCancel={() => setViewModalOpen(false)}
+					footer={null}
 				>
-					<Row gutter={16}>
-						<Form.Item name={["addNotes", "introduction"]}>
-							<TextArea
-								rows={4}
-								placeholder="Add your Notes here..."
-								maxLength={250}
-								disabled
-								style={{
-									width: "600px",
-									paddingTop: "20px",
-									marginTop: "20px",
-									paddingBottom: "-10px",
-									marginLeft: "50px",
-								}}
-							/>
-						</Form.Item>
-					</Row>
+					<Form style={{ marginLeft: "10px", marginTop: "30px" }}>
+						<Row gutter={16}>
+							<Form.Item label="Transaction ID" style={{ fontWeight: 480 }}>
+								{transactionDetails?.transactionId}
+							</Form.Item>
+						</Row>
+						<Row gutter={16}>
+							<Form.Item label="Remark" style={{ fontWeight: 480 }}>
+								{transactionDetails?.remark}
+							</Form.Item>
+						</Row>
+						<Row gutter={16}>
+							<Form.Item label="Severity" style={{ fontWeight: 480 }}>
+								{transactionDetails?.severity}
+							</Form.Item>
+						</Row>
+						<Row gutter={16}>
+							<Form.Item label="Fraud Rule" style={{ fontWeight: 480 }}>
+								{transactionDetails?.fraudRule}
+							</Form.Item>
+						</Row>
+						<Row gutter={16}>
+							<Form.Item label="Rule Description" style={{ fontWeight: 480 }}>
+								{transactionDetails?.ruleDescription}
+							</Form.Item>
+						</Row>
+					</Form>
 				</Modal>
 
 				{/* Fraud Confirmation Modal */}
