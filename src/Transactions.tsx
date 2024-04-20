@@ -373,7 +373,7 @@ const Transactions = () => {
 			>
 				{/* Search Fields */}
 				<Row gutter={4} style={{ marginBottom: "20px" }}>
-					<Col span={8}>
+					<Col span={9}>
 						<Form.Item
 							label={
 								<span
@@ -399,7 +399,7 @@ const Transactions = () => {
 						</Form.Item>
 					</Col>
 
-					<Col span={8}>
+					<Col span={9}>
 						<Form.Item
 							label={
 								<span
@@ -424,7 +424,7 @@ const Transactions = () => {
 						</Form.Item>
 					</Col>
 
-					<Col span={8}>
+					<Col span={9}>
 						<Form.Item
 							label={
 								<span
@@ -594,7 +594,7 @@ const Transactions = () => {
 						</Button>,
 					]}
 				>
-					<Form>
+					<Form style={{marginTop:'40px'}}>
 						<Form.Item label="Fraud Rule">
 							<Select
 								value={selectedRule}
