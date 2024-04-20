@@ -135,10 +135,12 @@ const Transactions = () => {
 			render: (text: any) => <p>{text ? text : "-"}</p>,
 		},
 		{
-			dataIndex: "customerId",
+			dataIndex: "customer",
 			key: "customerId",
 			title: "Customer ID",
-			render: (text: any) => <p>{text ? text : "-"}</p>,
+			render: (customer: any) => (
+				<p>{customer && customer.id ? customer.id : "-"}</p>
+			),
 		},
 		{
 			dataIndex: "flag",
