@@ -6,6 +6,7 @@ import {
 	Input,
 	Layout,
 	Modal,
+	Select,
 	Table,
 	Tag,
 	message,
@@ -18,10 +19,14 @@ import moment, { Moment } from "moment";
 import TextArea from "antd/es/input/TextArea";
 import dayjs, { Dayjs } from "dayjs";
 import CJSPie from "./Charts/ChartjsPir";
+import { set } from "@antv/util";
 
-interface TableDataItem {
-	// Add the properties of the objects here
-	[key: string]: any; // Use this line if the object's properties are dynamic
+interface TransactionDetails {
+	remark: string;
+	severity: string;
+	fraudRule: string;
+	ruleDescription: string;
+	transactionId: string;
 }
 
 interface DataItem {
@@ -51,35 +56,35 @@ interface Transaction {
 	flag: string;
 }
 
-// const TableComponent = () => {
 const Transactions = () => {
 	const [form] = Form.useForm();
 	const { RangePicker } = DatePicker;
-	const [tableData, setTableData] = useState<Transaction[]>([]); // replace [] with your actual data
-	const [filteredData, setFilteredData] = useState([]);
-	const [open, setOpen] = useState(false);
-	const [viewNotes, setViewNotes] = useState(false);
-	const [notes, setNotes] = useState<string[]>([]);
-	const [customerId, setCustomerId] = useState("");
+	const [tableData, setTableData] = useState<Transaction[]>([]);
 	const [transactionId, setTransactionId] = useState("");
-	const [fraudTransactions, setFraudTransactions] = useState<string[]>([]);
 	const [viewModalOpen, setViewModalOpen] = useState(false);
-	const [data, setData] = useState<DataItem[]>([]);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [isTextAreaEmpty, setIsTextAreaEmpty] = useState(true);
-	const [dataMonth, setDataMonth] = useState({ allMonth: "", number: 0 });
-	const [loading, setLoading] = useState(true);
-	// const [dateRange, setDateRange] = useState([]);
 	const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([
 		null,
 		null,
 	]);
 	const [searchCriteria, setSearchCriteria] = useState<string>("");
 	const [transactionsData, setTransactionsData] = useState<any[]>([]);
+	const [selectedCustomerId, setSelectedCustomerId] = useState("");
 
 	const handleSearchCriteriaChange = (criteria: string) => {
 		setSearchCriteria(criteria);
 	};
+
+	const [transactionDetails, setTransactionDetails] =
+		useState<TransactionDetails | null>(null);
+
+	//Add Notes States
+	const { Option } = Select;
+	const { TextArea } = Input;
+	const [addNotesModalVisible, setAddNotesModalVisible] = useState(false);
+	const [selectedRule, setSelectedRule] = useState("");
+	const [remark, setRemark] = useState("");
+	const [fraudStatus, setFraudStatus] = useState("");
 
 	// Layout for Form
 	const formItemLayout = {
@@ -93,10 +98,7 @@ const Transactions = () => {
 		},
 	};
 
-	const addNote = (note: string) => {
-		setNotes((prevNotes) => [...prevNotes, note]);
-	};
-
+	//Table Columns
 	const columns: any[] = [
 		{
 			dataIndex: "id",
@@ -116,9 +118,9 @@ const Transactions = () => {
 			dataIndex: "amount",
 			key: "amount",
 			title: "Amount",
-			align: "right",
+			align: "left",
 			render: (text: any) => (
-				<p style={{ textAlign: "right" }}>
+				<p style={{ textAlign: "left" }}>
 					{text
 						? parseFloat(text).toLocaleString(undefined, {
 								minimumFractionDigits: 2,
@@ -135,10 +137,12 @@ const Transactions = () => {
 			render: (text: any) => <p>{text ? text : "-"}</p>,
 		},
 		{
-			dataIndex: "customerId",
+			dataIndex: "customer",
 			key: "customerId",
 			title: "Customer ID",
-			render: (text: any) => <p>{text ? text : "-"}</p>,
+			render: (customer: any) => (
+				<p>{customer && customer.id ? customer.id : "-"}</p>
+			),
 		},
 		{
 			dataIndex: "flag",
@@ -156,7 +160,8 @@ const Transactions = () => {
 						style={{ cursor: "pointer" }}
 						onClick={() => {
 							setIsModalOpen(true);
-							addNote(record);
+							handleNotFlaggedClick(record.id);
+							console.log(record.id, "record.id", record, "record");
 						}}
 					>
 						Not Flagged {/* Display "Not Flagged" in the Tag */}
@@ -175,10 +180,10 @@ const Transactions = () => {
 						<Button
 							type="link"
 							size="small"
-							disabled={record.isFraud === "N"} // Disable the button if isFraud is "N"
+							disabled={record.isFraud === "N" || record.isFraud === null} // Disable the button if isFraud is "N"
 							onClick={(e) => {
 								setViewModalOpen(true);
-								// setSelectedRecord(record);
+								handleViewDetails(record.id);
 							}}
 						>
 							View
@@ -197,6 +202,7 @@ const Transactions = () => {
 			);
 			setTransactionsData(result.data);
 			setTableData(result.data);
+			setSelectedCustomerId(customerId);
 		} catch (error) {
 			console.error(
 				"Error occurred while fetching data by Customer ID: ",
@@ -220,16 +226,16 @@ const Transactions = () => {
 		}
 	};
 
+	// Handler for date range change
 	const handleDateRangeChange = (
 		dates: [Dayjs | null, Dayjs | null],
 		dateStrings: [string, string]
 	) => {
 		// Update dateRange state with selected dates
 		setDateRange(dates);
-		console.log("Selected date range:", dates);
-		console.log("Formatted date strings:", dateStrings);
 	};
 
+	// API get all transactions
 	const fetchData = async () => {
 		try {
 			// Check if both start and end dates are selected
@@ -259,39 +265,79 @@ const Transactions = () => {
 			setTableData(filteredData); // Update table data with filtered data
 		} catch (error) {
 			console.error("Error fetching data:", error);
-			message.error("Failed to fetch data");
 		}
 	};
 
+	// Fetch data on date range change
 	useEffect(() => {
-		console.log("Date Range:", dateRange);
 		fetchData();
 	}, [dateRange]);
 
-	const handleOk = async (record: any) => {
+	// API to fetch View Notes
+	const fetchTransactionDetails = async (transactionId: any) => {
 		try {
-			// Make the API call to update the transaction as fraud
-			await axios.put(`http://localhost:8080/fraud/transaction/flag`, {
-				transactionId: record.id,
-				fraudTransactionDetailResponses: notes, // Pass the notes entered by the user
-			});
+			const response = await axios.get(
+				`http://localhost:8080/viewDetails/${transactionId}`
+			);
+			setTransactionDetails(response.data);
+			console.log(response.data, "response.data");
 
-			// Update the state or perform any necessary actions
-			setFraudTransactions((prev) => [...prev, record.id]);
-			message.success("Transaction marked as fraud successfully");
-			setIsModalOpen(false); // Close the modal
+			setViewModalOpen(true); // Open the view modal after fetching data
+		} catch (error) {
+			console.error("Error fetching transaction details:", error);
+		}
+	};
+
+	// Handler for view button click
+	const handleViewDetails = (transactionId: any) => {
+		fetchTransactionDetails(transactionId);
+	};
+
+	// Handler for not flagged button click
+	const handleNotFlaggedClick = (record: any) => {
+		setTransactionId(record);
+		setAddNotesModalVisible(true);
+	};
+
+	//Refresh data from all APIs
+	const fetchDataFromAllApis = async () => {
+		try {
+			// Fetch data by Customer ID
+			if (searchCriteria === "CustomerId") {
+				await searchByCustomerID(selectedCustomerId); // Use the stored customer ID
+			}
+			// Fetch data by Transaction ID
+			else if (searchCriteria === "TransactionId") {
+				await searchByTransactionID(transactionId);
+			}
+			// Fetch all transactions
+			else if (searchCriteria === "DateRange") {
+				await fetchData();
+			}
+		} catch (error) {
+			console.error("Error fetching data from all APIs:", error);
+		}
+	};
+
+	//Api to mark transaction as fraud
+	const handleAddNotes = async () => {
+		try {
+			await axios.put("http://localhost:8080/fraud/transaction/flag", {
+				transactionId: transactionId,
+				fraudRule: selectedRule,
+				remark: remark,
+				severity: "H",
+				flag: "Y",
+				modifiedBy: "lakshika",
+			});
+			setFraudStatus("Y");
+			setAddNotesModalVisible(false);
+
+			// Fetch data from all APIs after adding notes
+			fetchDataFromAllApis();
 		} catch (error) {
 			console.error("Error marking transaction as fraud:", error);
-			message.error("Failed to mark transaction as fraud");
 		}
-		// handleUnblock(record);
-		setFraudTransactions((prev) => [...prev, transactionId]);
-		setIsModalOpen(false);
-	};
-	console.log("Notes:", notes);
-
-	const handleCancel = () => {
-		setIsModalOpen(false);
 	};
 
 	return (
@@ -327,7 +373,7 @@ const Transactions = () => {
 			>
 				{/* Search Fields */}
 				<Row gutter={4} style={{ marginBottom: "20px" }}>
-					<Col span={8}>
+					<Col span={9}>
 						<Form.Item
 							label={
 								<span
@@ -353,7 +399,7 @@ const Transactions = () => {
 						</Form.Item>
 					</Col>
 
-					<Col span={8}>
+					<Col span={9}>
 						<Form.Item
 							label={
 								<span
@@ -378,7 +424,7 @@ const Transactions = () => {
 						</Form.Item>
 					</Col>
 
-					<Col span={8}>
+					<Col span={9}>
 						<Form.Item
 							label={
 								<span
@@ -408,6 +454,7 @@ const Transactions = () => {
 					</Col>
 				</Row>
 
+				{/* Search Button */}
 				<Form.Item wrapperCol={{ offset: 6, span: 16 }}>
 					<Button
 						type="primary"
@@ -428,6 +475,7 @@ const Transactions = () => {
 						Search
 					</Button>
 				</Form.Item>
+			
 				<Form.Item>
 					<div
 						style={{
@@ -472,19 +520,24 @@ const Transactions = () => {
 						style={{ marginTop: "50px", marginBottom: "30px" }}
 					>
 						<div className="card-container-TChart">
-							Transactions by Type
-							<div
-								className="mt-9 size-2 h-4"
-								style={{
-									scale: "0.9",
-									marginTop: "-80px",
-									paddingTop: "100px",
-									paddingLeft: "50px",
-									// marginBottom: "-180px",
-								}}
-							>
-								<CJSPie transactions={transactionsData} />
-							</div>
+							{tableData.length === 0 ? (
+								<p style={{ marginLeft: "140px" }}>No data available</p>
+							) : (
+								<>
+									Transactions by Type
+									<div
+										className="mt-9 size-2 h-4"
+										style={{
+											scale: "0.9",
+											marginTop: "-100px",
+											paddingTop: "100px",
+											paddingLeft: "50px",
+										}}
+									>
+										<CJSPie transactions={transactionsData} />
+									</div>
+								</>
+							)}
 						</div>
 					</div>
 				)}
@@ -492,58 +545,89 @@ const Transactions = () => {
 				{/* View Notes */}
 				<Modal
 					title="View Notes"
-					centered
-					open={viewNotes}
-					onOk={() => setViewNotes(false)}
-					onCancel={() => setViewNotes(false)}
-					width={500}
-					style={{ color: "white" }}
-					className="custom-modal"
+					width={650}
+					visible={viewModalOpen}
+					onCancel={() => setViewModalOpen(false)}
+					footer={null}
 				>
-					<Row gutter={16}>
-						<Form.Item name={["addNotes", "introduction"]}>
-							<TextArea
-								rows={4}
-								placeholder="Add your Notes here..."
-								maxLength={250}
-								disabled
-								style={{
-									width: "600px",
-									paddingTop: "20px",
-									marginTop: "20px",
-									paddingBottom: "-10px",
-									marginLeft: "50px",
-								}}
-							/>
-						</Form.Item>
-					</Row>
+					<Form style={{ marginLeft: "10px", marginTop: "30px" }}>
+						<Row gutter={16}>
+							<Form.Item label="Transaction ID" style={{ fontWeight: 480 }}>
+								{transactionDetails?.transactionId}
+							</Form.Item>
+						</Row>
+						<Row gutter={16}>
+							<Form.Item label="Remark" style={{ fontWeight: 480 }}>
+								{transactionDetails?.remark}
+							</Form.Item>
+						</Row>
+						<Row gutter={16}>
+							<Form.Item label="Severity" style={{ fontWeight: 480 }}>
+								{transactionDetails?.severity}
+							</Form.Item>
+						</Row>
+						<Row gutter={16}>
+							<Form.Item label="Fraud Rule" style={{ fontWeight: 480 }}>
+								{transactionDetails?.fraudRule}
+							</Form.Item>
+						</Row>
+						<Row gutter={16}>
+							<Form.Item label="Rule Description" style={{ fontWeight: 480 }}>
+								{transactionDetails?.ruleDescription}
+							</Form.Item>
+						</Row>
+					</Form>
 				</Modal>
 
-				{/* Fraud Confirmation Modal */}
+				{/* Add Notes Modal */}
 				<Modal
-					title="Are you sure you want to mark this transaction as fraud?"
-					open={isModalOpen}
-					onOk={handleOk}
-					onCancel={handleCancel}
+					title="Add Notes"
+					width={650}
+					visible={addNotesModalVisible}
+					onCancel={() => setAddNotesModalVisible(false)}
+					footer={[
+						<Button key="back" onClick={() => setAddNotesModalVisible(false)}>
+							Cancel
+						</Button>,
+						<Button key="submit" type="primary" onClick={handleAddNotes}>
+							Add
+						</Button>,
+					]}
 				>
-					{" "}
-					<Row gutter={16}>
-						<Form.Item name={["addNotes", "introduction"]}>
+					<Form style={{marginTop:'40px'}}>
+						<Form.Item label="Fraud Rule">
+							<Select
+								value={selectedRule}
+								onChange={(value) => setSelectedRule(value)}
+							>
+								<Option value="1">Daily transaction amount has exceeded</Option>
+								<Option value="2">
+									Abnormal transaction count with the same amount
+								</Option>
+								<Option value="3">
+									Abnormal transaction frequency in x period of time
+								</Option>
+								<Option value="4">
+									Abnormal transaction count for a specific customer
+								</Option>
+
+								<Option value="5">
+									Abnormal transaction count for a specific customer outside
+									peak hours
+								</Option>
+								<Option value="6">
+									Multiple declined txn in x amount of time
+								</Option>
+							</Select>
+						</Form.Item>
+						<Form.Item label="Remark">
 							<TextArea
 								rows={4}
-								placeholder="Add your Notes here..."
-								maxLength={250}
-								style={{
-									width: "600px",
-									paddingTop: "20px",
-									marginTop: "20px",
-									paddingBottom: "-10px",
-									marginLeft: "50px",
-								}}
-								// onChange={(e) => setNotes(e.target.value)}
+								value={remark}
+								onChange={(e) => setRemark(e.target.value)}
 							/>
 						</Form.Item>
-					</Row>
+					</Form>
 				</Modal>
 			</Form>
 			<FloatButton.BackTop />

@@ -34,7 +34,8 @@ const LineChart: React.FC = () => {
             legend: {
               display: false
             }
-          }
+          },
+          backgroundColor: 'white',
         }
       });
     }
@@ -47,7 +48,7 @@ const LineChart: React.FC = () => {
     };
   }, []);
 
-  return <canvas ref={chartRef} style={{ width: '100%', maxWidth: '900px' }} />;
+  return <canvas ref={chartRef} style={{ width: '100%', maxWidth: '1200px',backgroundColor:'white',borderRadius:'10px',marginTop:'10px' }}  />;
 };
 
 export default LineChart;

@@ -60,13 +60,19 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 				},
 				options: {
 					plugins: {
-						title: {
-							display: false,
-							text: "Transaction Types",
+						legend: {
+							labels: {
+								font: {
+									size: 20, // Adjust the font size of the labels
+								},
+								padding: 30, // Add space between the labels
+							
+							},
 						},
 					},
 				},
 			});
+
 
 			return () => {
 				CJSPieChart.destroy();
@@ -76,6 +82,8 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 
 	return <canvas ref={chartRef}
 	// style={{position:"relative" ,height:"80px",width: "100px",scale:'0.7',marginTop:'-340px',marginRight:'400px'}} 
+	// style={{ backgroundColor:'white',borderRadius:'10px',marginTop:'10px',width:'500px' }} 
+	// style={{ marginTop: "20px" }}
 	/>;
 };
 
