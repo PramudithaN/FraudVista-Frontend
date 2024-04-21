@@ -16,10 +16,8 @@ import { Row, Col } from "antd";
 import { Header } from "antd/es/layout/layout";
 import axios from "axios";
 import moment, { Moment } from "moment";
-import TextArea from "antd/es/input/TextArea";
 import dayjs, { Dayjs } from "dayjs";
-import CJSPie from "./Charts/ChartjsPir";
-import { set } from "@antv/util";
+import DonutChart from "./Charts/DonutChart";
 
 interface TransactionDetails {
 	remark: string;
@@ -27,24 +25,6 @@ interface TransactionDetails {
 	fraudRule: string;
 	ruleDescription: string;
 	transactionId: string;
-}
-
-interface DataItem {
-	id?: number;
-	email: string;
-	password: string;
-	businessName: string;
-	status: string;
-	contactNumber: string;
-	businessRegistrationNumber: string;
-	businessCategory: {
-		id: number;
-		categoryName: string;
-	};
-	userRole: {
-		id: number;
-		roleDescription: string;
-	};
 }
 
 interface Transaction {
@@ -74,7 +54,6 @@ const Transactions = () => {
 	const handleSearchCriteriaChange = (criteria: string) => {
 		setSearchCriteria(criteria);
 	};
-
 	const [transactionDetails, setTransactionDetails] =
 		useState<TransactionDetails | null>(null);
 
@@ -85,6 +64,8 @@ const Transactions = () => {
 	const [selectedRule, setSelectedRule] = useState("");
 	const [remark, setRemark] = useState("");
 	const [fraudStatus, setFraudStatus] = useState("");
+
+	// ------------------------------------------------------------------------------------------------------------------------------
 
 	// Layout for Form
 	const formItemLayout = {
@@ -169,7 +150,6 @@ const Transactions = () => {
 				);
 			},
 		},
-
 		{
 			dataIndex: "action",
 			key: "action",
@@ -193,6 +173,8 @@ const Transactions = () => {
 			},
 		},
 	];
+
+	//API s--------------------------------------------------------------------------------------------------------------
 
 	// API for searching by Customer ID
 	const searchByCustomerID = async (customerId: string) => {
@@ -224,15 +206,6 @@ const Transactions = () => {
 				error
 			);
 		}
-	};
-
-	// Handler for date range change
-	const handleDateRangeChange = (
-		dates: [Dayjs | null, Dayjs | null],
-		dateStrings: [string, string]
-	) => {
-		// Update dateRange state with selected dates
-		setDateRange(dates);
 	};
 
 	// API get all transactions
@@ -288,17 +261,6 @@ const Transactions = () => {
 		}
 	};
 
-	// Handler for view button click
-	const handleViewDetails = (transactionId: any) => {
-		fetchTransactionDetails(transactionId);
-	};
-
-	// Handler for not flagged button click
-	const handleNotFlaggedClick = (record: any) => {
-		setTransactionId(record);
-		setAddNotesModalVisible(true);
-	};
-
 	//Refresh data from all APIs
 	const fetchDataFromAllApis = async () => {
 		try {
@@ -338,6 +300,28 @@ const Transactions = () => {
 		} catch (error) {
 			console.error("Error marking transaction as fraud:", error);
 		}
+	};
+
+	// Functions --------------------------------------------------------------------------------------------------------------
+
+	// Handler for date range change
+	const handleDateRangeChange = (
+		dates: [Dayjs | null, Dayjs | null],
+		dateStrings: [string, string]
+	) => {
+		// Update dateRange state with selected dates
+		setDateRange(dates);
+	};
+
+	// Handler for view button click
+	const handleViewDetails = (transactionId: any) => {
+		fetchTransactionDetails(transactionId);
+	};
+
+	// Handler for not flagged button click
+	const handleNotFlaggedClick = (record: any) => {
+		setTransactionId(record);
+		setAddNotesModalVisible(true);
 	};
 
 	return (
@@ -475,7 +459,8 @@ const Transactions = () => {
 						Search
 					</Button>
 				</Form.Item>
-			
+
+				{/* Display Tag */}
 				<Form.Item>
 					<div
 						style={{
@@ -504,6 +489,7 @@ const Transactions = () => {
 						</Tag>
 					</div>
 				</Form.Item>
+
 				{/* <TableComponent /> */}
 				<Table
 					dataSource={tableData}
@@ -534,7 +520,7 @@ const Transactions = () => {
 											paddingLeft: "50px",
 										}}
 									>
-										<CJSPie transactions={transactionsData} />
+										<DonutChart transactions={transactionsData} />
 									</div>
 								</>
 							)}
@@ -542,7 +528,7 @@ const Transactions = () => {
 					</div>
 				)}
 
-				{/* View Notes */}
+				{/* View Notes Modal */}
 				<Modal
 					title="View Notes"
 					width={650}
@@ -594,7 +580,7 @@ const Transactions = () => {
 						</Button>,
 					]}
 				>
-					<Form style={{marginTop:'40px'}}>
+					<Form style={{ marginTop: "40px" }}>
 						<Form.Item label="Fraud Rule">
 							<Select
 								value={selectedRule}

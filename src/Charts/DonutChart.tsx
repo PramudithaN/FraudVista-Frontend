@@ -25,7 +25,7 @@ interface Props {
 	transactions: Transaction[];
 }
 
-const CJSPie: React.FC<Props> = ({ transactions }) => {
+const DonutChart: React.FC<Props> = ({ transactions }) => {
 	const chartRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -43,18 +43,15 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 			const chartLabels = Object.keys(transactionCounts);
 			const chartData = Object.values(transactionCounts);
 
-			const CJSPieChart = new Chart(chartRef.current, {
+			const donutChart = new Chart(chartRef.current, {
 				type: "doughnut",
 				data: {
 					labels: chartLabels,
 					datasets: [
 						{
-							backgroundColor: [
-								"#ffe162",
-								"#4cd180",
-							],
+							backgroundColor: ["#ffe162", "#4cd180"],
 							data: chartData,
-                            borderWidth: 0, // Remove the stroke
+							borderWidth: 0, // Remove the stroke
 						},
 					],
 				},
@@ -66,25 +63,26 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 									size: 20, // Adjust the font size of the labels
 								},
 								padding: 30, // Add space between the labels
-							
 							},
 						},
 					},
 				},
 			});
 
-
 			return () => {
-				CJSPieChart.destroy();
+				donutChart.destroy();
 			};
 		}
 	}, [transactions]);
 
-	return <canvas ref={chartRef}
-	// style={{position:"relative" ,height:"80px",width: "100px",scale:'0.7',marginTop:'-340px',marginRight:'400px'}} 
-	// style={{ backgroundColor:'white',borderRadius:'10px',marginTop:'10px',width:'500px' }} 
-	// style={{ marginTop: "20px" }}
-	/>;
+	return (
+		<canvas
+			ref={chartRef}
+			// style={{position:"relative" ,height:"80px",width: "100px",scale:'0.7',marginTop:'-340px',marginRight:'400px'}}
+			// style={{ backgroundColor:'white',borderRadius:'10px',marginTop:'10px',width:'500px' }}
+			// style={{ marginTop: "20px" }}
+		/>
+	);
 };
 
-export default CJSPie;
+export default DonutChart;
