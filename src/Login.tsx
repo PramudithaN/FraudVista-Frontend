@@ -20,7 +20,7 @@ const Login = () => {
 	const [loading, setLoading] = useState(true);
 	const [api, contextHolder] = notification.useNotification();
 
-  // Function to display success notification
+	// Function to display success notification
 	const successNotification = (
 		type: NotificationType,
 		placement: NotificationPlacement
@@ -32,7 +32,7 @@ const Login = () => {
 		});
 	};
 
-  // Function to display error notification
+	// Function to display error notification
 	const errorNotification = (
 		type: NotificationType,
 		placement: NotificationPlacement
@@ -44,7 +44,7 @@ const Login = () => {
 		});
 	};
 
-  // Function to handle form submission
+	// Function to handle form submission
 	const onFinish = (values: any) => {
 		// Hardcoded email and password
 		const email = "shiku@gmail.com" && "andrewg@fraudvista.com";
@@ -121,7 +121,7 @@ const Login = () => {
 								marginRight: "400px",
 							}}
 						>
-              				{/* Form Fields */}
+							{/* Form Fields */}
 							<Form
 								form={form}
 								name="normal_login"
@@ -172,7 +172,7 @@ const Login = () => {
 									/>
 								</Form.Item>
 
-                {/* Login Button */}
+								{/* Login Button */}
 								<Form.Item>
 									<Button
 										type="primary"

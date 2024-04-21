@@ -13,7 +13,7 @@ import { createFromIconfontCN } from '@ant-design/icons';
 
 // Initialize icon font
 const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_1234567_xyz.js', // Replace with your icon font script URL
+  scriptUrl: '//at.alicdn.com/t/font_1234567_xyz.js',
 });
 
 function App() {

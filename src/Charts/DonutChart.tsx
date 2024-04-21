@@ -25,7 +25,7 @@ interface Props {
 	transactions: Transaction[];
 }
 
-const CJSPie: React.FC<Props> = ({ transactions }) => {
+const DonutChart: React.FC<Props> = ({ transactions }) => {
 	const chartRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -43,7 +43,7 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 			const chartLabels = Object.keys(transactionCounts);
 			const chartData = Object.values(transactionCounts);
 
-			const CJSPieChart = new Chart(chartRef.current, {
+			const donutChart = new Chart(chartRef.current, {
 				type: "doughnut",
 				data: {
 					labels: chartLabels,
@@ -75,7 +75,7 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 
 
 			return () => {
-				CJSPieChart.destroy();
+				donutChart.destroy();
 			};
 		}
 	}, [transactions]);
@@ -87,4 +87,4 @@ const CJSPie: React.FC<Props> = ({ transactions }) => {
 	/>;
 };
 
-export default CJSPie;
+export default DonutChart;

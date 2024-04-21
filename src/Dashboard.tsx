@@ -11,16 +11,16 @@ import { Header, Content } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
-import CJSPie from "./Charts/ChartjsPir";
-import LineChart from "./Charts/LineChart";
-import LineData from "./Charts/LineData";
+import DonutChart from "./Charts/DonutChart";
+import LineGraph from "./Charts/LineGraph";
+import RealTimeLineGraph from "./Charts/RealTimeLineGraph";
 
 interface Transaction {
 	createdDate: string;
 	isFraud: string;
-	type: string; // Adding type property to Transaction interface
-	amount: number; // Adding amount property to Transaction interface
-	id: string; // Adding id property to Transaction interface
+	type: string; 
+	amount: number; 
+	id: string; 
 }
 
 const Dashboard = () => {
@@ -36,7 +36,7 @@ const Dashboard = () => {
 		null
 	); // State to store the ID of the fraud transaction
 
-	// Define your default dates
+	// Define default dates for Alert Analytics
 	const defaultStartDate = dayjs("2024-01-01");
 	const defaultEndDate = dayjs("2024-03-28");
 
@@ -104,7 +104,7 @@ const Dashboard = () => {
 					<div className="flex-container">
 						<div className="flex-item">
 							<div className="card-container-0">Real-Time Transactions
-						<div style={{backgroundColor:'fff'}}>	<LineData/></div>
+						<div style={{backgroundColor:'fff'}}>	<RealTimeLineGraph/></div>
 							</div>
 						</div>
 
@@ -169,7 +169,7 @@ const Dashboard = () => {
 							<div className="card-container">
 								Transactions by Type
 								<div className="mt-9" style={{scale:'0.65',marginTop:'-80px',marginBottom:'-80px',marginLeft:'150px'}}>
-									<CJSPie transactions={transactionsData} />
+									<DonutChart transactions={transactionsData} />
 								</div>
 							</div>
 						</div>
@@ -209,7 +209,7 @@ const Dashboard = () => {
 							<div className="card-container">
 								Fraud Analytics
 								<div className="mt-16 size-2 h-4">
-									<LineChart />
+									<LineGraph />
 								</div>
 							</div>
 						</div>

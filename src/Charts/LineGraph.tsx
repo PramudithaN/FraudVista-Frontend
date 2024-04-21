@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
-const LineChart: React.FC = () => {
+const LineGraph: React.FC = () => {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<Chart>();
 
@@ -51,4 +51,4 @@ const LineChart: React.FC = () => {
   return <canvas ref={chartRef} style={{ width: '100%', maxWidth: '1200px',backgroundColor:'white',borderRadius:'10px',marginTop:'10px' }}  />;
 };
 
-export default LineChart;
+export default LineGraph;

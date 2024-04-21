@@ -11,12 +11,13 @@ interface Transaction {
   isFraud: string;
 }
 
-const LineData: React.FC = () => {
+const RealTimeLineGraph: React.FC = () => {
   const [chartData, setChartData] = useState<any>(null);
   const [chartInstance, setChartInstance] = useState<Chart | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
 
+  //Api to get all transactions
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -159,4 +160,4 @@ const LineData: React.FC = () => {
   );
 };
 
-export default LineData;
+export default RealTimeLineGraph;
