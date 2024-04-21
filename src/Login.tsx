@@ -47,8 +47,8 @@ const Login = () => {
 	// Function to handle form submission
 	const onFinish = (values: any) => {
 		// Hardcoded email and password
-		const email = "shiku@gmail.com" && "andrewg@fraudvista.com";
-		const password = "shikus" && "andrewg";
+		const email = "andrewg@fraudvista.com";
+		const password = "andrewg";
 		console.log("Received values of form: ", form.getFieldsValue());
 
 		// Check if the entered email and password match the hardcoded values
