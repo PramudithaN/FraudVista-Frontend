@@ -600,15 +600,14 @@ const Transactions = () => {
 									Abnormal transaction frequency in x period of time
 								</Option>
 								<Option value="4">
-									Abnormal transaction count for a specific customer
+								Abnormal transaction count for a specific customer outside peak hours
 								</Option>
 
 								<Option value="5">
-									Abnormal transaction count for a specific customer outside
-									peak hours
+								Multiple declined txn in x amount of time
 								</Option>
 								<Option value="6">
-									Multiple declined txn in x amount of time
+								Transaction count exceeding customer's average transaction count per day
 								</Option>
 							</Select>
 						</Form.Item>
