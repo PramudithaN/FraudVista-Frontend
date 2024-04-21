@@ -4,6 +4,7 @@ import React, { useState } from "react";
 const UnderConstruction = () => {
 	const [loading, setLoading] = useState(true);
 
+	//Function to go back to the previous page
 	const goback = () => {
 		window.history.back();
 	};

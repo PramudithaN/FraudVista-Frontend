@@ -12,26 +12,26 @@
 @table-border-color: #595959; // Table border color
 
 // Import the default Ant Design styles
-@import '~antd/dist/antd.less';
+@import "~antd/dist/antd.less";
 
 // Override table styles
 .ant-table {
-  background-color: @background-color-base; // Table background color
-  color: @text-color; // Table text color
-  border-radius: 8px; // Border radius
-  border: 1px solid @table-border-color; // Table border
+	background-color: @background-color-base; // Table background color
+	color: @text-color; // Table text color
+	border-radius: 8px; // Border radius
+	border: 1px solid @table-border-color; // Table border
 }
 
 .ant-table-thead > tr > th {
-  background-color: @table-header-bg; // Table header background color
-  color: @table-header-color; // Table header text color
+	background-color: @table-header-bg; // Table header background color
+	color: @table-header-color; // Table header text color
 }
 
 .ant-table-tbody > tr:hover > td {
-  background-color: @table-row-hover-bg; // Table row hover background color
+	background-color: @table-row-hover-bg; // Table row hover background color
 }
 
 .ant-table-tbody > tr.ant-table-row-selected > td {
-  background-color: @table-selected-row-bg; // Table selected row background color
-  color: @table-selected-row-color; // Table selected row text color
+	background-color: @table-selected-row-bg; // Table selected row background color
+	color: @table-selected-row-color; // Table selected row text color
 }

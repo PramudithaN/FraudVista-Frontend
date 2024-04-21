@@ -16,8 +16,6 @@ import ModalPop from "../Modal";
 
 const { Header, Content, Sider } = Layout;
 
-// type MenuItem = Required<MenuProps>["items"][number];
-
 type MenuItem = {
 	label: React.ReactNode;
 	key: React.Key;
@@ -58,6 +56,7 @@ const Navbar: React.FC = () => {
 		token: { colorBgContainer, borderRadiusLG },
 	} = theme.useToken();
 	const [data, setData] = useState({ month: "", number: 0 }); //state for API data --> month and number of transactions
+
 	// SideNavbar Items
 	const items: MenuItem[] = [
 		getItem("Dashboard", "1", <PieChartOutlined />, "/dashboard"),
@@ -66,6 +65,7 @@ const Navbar: React.FC = () => {
 		getItem("Profile", "4", <TeamOutlined />, "/profile"),
 		// getItem("Logout", "9", <LogoutOutlined />, "/logout"),
 	];
+
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const showModal = () => {
@@ -158,12 +158,7 @@ const Navbar: React.FC = () => {
 								<label className="">FRAUD ANALYST</label>
 							</div>
 							<div className="demo-logo-vertical" />
-							{/* <Menu
-						theme="dark"
-						defaultSelectedKeys={["1"]}
-						mode="inline"
-						items={items}
-					/> */}
+
 							<Menu theme="dark" mode="inline">
 								{items.map((item) => {
 									if (item) {
@@ -194,10 +189,6 @@ const Navbar: React.FC = () => {
 							<Link to="/" className="font-regular flex justify-around">
 								<div
 									style={{
-										// position: "fixed",
-
-										// height: "48px",
-										// width: `${collapsed ? "80px" : "20%"}`,
 										color: "#9e9e9e",
 										lineHeight: "48px",
 										fontWeight: 400,

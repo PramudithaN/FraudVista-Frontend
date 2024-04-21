@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 
 interface Transaction {
 	createdDate: string;
-	isFraud: string; 
+	isFraud: string;
 }
 
 const Profile = () => {
@@ -73,7 +73,6 @@ const Profile = () => {
 							className="flex-item"
 							style={{ marginLeft: "100px", marginTop: "100px" }}
 						>
-							{/* Center the div horizontally and vertically */}
 							<div
 								className="mt-2"
 								style={{
@@ -165,6 +164,7 @@ const Profile = () => {
 				</Content>
 				<Content className="margin-container">
 					<div className="flex-container">
+						{/* Activity Card */}
 						<div className="flex-item">
 							<div className="card-container">
 								Activity
@@ -214,6 +214,7 @@ const Profile = () => {
 								</div>
 							</div>
 						</div>
+						{/* Flagged Transactions Card */}
 						<div className="card-container">
 							<div
 								style={{
