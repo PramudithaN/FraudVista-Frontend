@@ -64,6 +64,7 @@ const Transactions = () => {
 	const [selectedRule, setSelectedRule] = useState("");
 	const [remark, setRemark] = useState("");
 	const [fraudStatus, setFraudStatus] = useState("");
+	const [severity, setSeverity] = useState("");
 
 	// ------------------------------------------------------------------------------------------------------------------------------
 
@@ -253,7 +254,12 @@ const Transactions = () => {
 				`http://localhost:8080/viewDetails/${transactionId}`
 			);
 			setTransactionDetails(response.data);
-			console.log(response.data, "response.data");
+			setSeverity(response.data);
+			if(response.data.remark === "N/A"){
+				response.data.remark = "-";
+		   } else {
+				console.log("Error")
+			}
 
 			setViewModalOpen(true); // Open the view modal after fetching data
 		} catch (error) {
@@ -288,7 +294,7 @@ const Transactions = () => {
 				transactionId: transactionId,
 				fraudRule: selectedRule,
 				remark: remark,
-				severity: "H",
+				severity: severity,
 				flag: "Y",
 				modifiedBy: "lakshika",
 			});
@@ -576,7 +582,7 @@ const Transactions = () => {
 							Cancel
 						</Button>,
 						<Button key="submit" type="primary" onClick={handleAddNotes}>
-							Add
+							Flag
 						</Button>,
 					]}
 				>
