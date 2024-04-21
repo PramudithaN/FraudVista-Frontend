@@ -18,9 +18,9 @@ import RealTimeLineGraph from "./Charts/RealTimeLineGraph";
 interface Transaction {
 	createdDate: string;
 	isFraud: string;
-	type: string; 
-	amount: number; 
-	id: string; 
+	type: string;
+	amount: number;
+	id: string;
 }
 
 const Dashboard = () => {
@@ -103,8 +103,12 @@ const Dashboard = () => {
 				<Content className="margin-container">
 					<div className="flex-container">
 						<div className="flex-item">
-							<div className="card-container-0">Real-Time Transactions
-						<div style={{backgroundColor:'fff'}}>	<RealTimeLineGraph/></div>
+							<div className="card-container-0">
+								Real-Time Transactions
+								<div style={{ backgroundColor: "fff" }}>
+									{" "}
+									<RealTimeLineGraph />
+								</div>
 							</div>
 						</div>
 
@@ -163,12 +167,20 @@ const Dashboard = () => {
 				</Content>
 
 				<Content className="margin-container">
-				<div className="flex-container">
+					<div className="flex-container">
 						{/* Content for Fraud Analytics */}
 						<div className="flex-item">
 							<div className="card-container">
 								Transactions by Type
-								<div className="mt-9" style={{scale:'0.65',marginTop:'-80px',marginBottom:'-80px',marginLeft:'150px'}}>
+								<div
+									className="mt-9"
+									style={{
+										scale: "0.65",
+										marginTop: "-80px",
+										marginBottom: "-80px",
+										marginLeft: "150px",
+									}}
+								>
 									<DonutChart transactions={transactionsData} />
 								</div>
 							</div>
@@ -177,9 +189,7 @@ const Dashboard = () => {
 						<div className="half-width">
 							<div className="card-container">
 								Unusual Alerts Identified
-								<div 
-								style={{ marginTop: "40px" }}
-								>
+								<div style={{ marginTop: "40px" }}>
 									{transactionsData
 										.slice(-6) // Get the last 6 transactions
 										.filter((transaction) => transaction.isFraud === "Y") // Filter out transactions where isFraud is not 'Y'

@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 
 interface Transaction {
 	createdDate: string;
-	isFraud: string; 
+	isFraud: string;
 }
 
 const Profile = () => {
@@ -73,7 +73,6 @@ const Profile = () => {
 							className="flex-item"
 							style={{ marginLeft: "100px", marginTop: "100px" }}
 						>
-							
 							<div
 								className="mt-2"
 								style={{

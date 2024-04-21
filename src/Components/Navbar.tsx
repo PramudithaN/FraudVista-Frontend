@@ -158,7 +158,7 @@ const Navbar: React.FC = () => {
 								<label className="">FRAUD ANALYST</label>
 							</div>
 							<div className="demo-logo-vertical" />
-					
+
 							<Menu theme="dark" mode="inline">
 								{items.map((item) => {
 									if (item) {
