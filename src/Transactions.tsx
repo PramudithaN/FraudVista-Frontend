@@ -300,7 +300,7 @@ const Transactions = () => {
 			});
 			setFraudStatus("Y");
 			setAddNotesModalVisible(false);
-
+			console.log(severity,"severity")
 			// Fetch data from all APIs after adding notes
 			fetchDataFromAllApis();
 		} catch (error) {
