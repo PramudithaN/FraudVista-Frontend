@@ -19,6 +19,13 @@ import moment, { Moment } from "moment";
 import dayjs, { Dayjs } from "dayjs";
 import DonutChart from "./Charts/DonutChart";
 
+interface FraudRuleOption {
+	id: number;
+	rule: string;
+	description: string;
+	type: string;
+}
+
 interface TransactionDetails {
 	remark: string;
 	severity: string;
@@ -56,6 +63,19 @@ const Transactions = () => {
 	};
 	const [transactionDetails, setTransactionDetails] =
 		useState<TransactionDetails | null>(null);
+	const [fraudRuleOptions, setFraudRuleOptions] = useState<
+		{
+			value: string;
+			label: string;
+			id?: number;
+			description?: string;
+			rule?: string;
+		}[]
+	>([]);
+
+	const [selectedCategory, setSelectedCategory] = useState<any>("");
+	const [cancelButtonClicked, setCancelButtonClicked] = useState(false);
+
 
 	//Add Notes States
 	const { Option } = Select;
@@ -65,7 +85,7 @@ const Transactions = () => {
 	const [remark, setRemark] = useState("");
 	const [fraudStatus, setFraudStatus] = useState("");
 	const [severity, setSeverity] = useState("");
-
+	const [putSeverity, setPutSeverity] = useState("");
 	// ------------------------------------------------------------------------------------------------------------------------------
 
 	// Layout for Form
@@ -143,7 +163,6 @@ const Transactions = () => {
 						onClick={() => {
 							setIsModalOpen(true);
 							handleNotFlaggedClick(record.id);
-							console.log(record.id, "record.id", record, "record");
 						}}
 					>
 						Not Flagged {/* Display "Not Flagged" in the Tag */}
@@ -254,11 +273,12 @@ const Transactions = () => {
 				`http://localhost:8080/viewDetails/${transactionId}`
 			);
 			setTransactionDetails(response.data);
-			setSeverity(response.data);
-			if(response.data.remark === "N/A"){
+			setSeverity(response.data.severity);
+
+			if (response.data.remark === "N/A") {
 				response.data.remark = "-";
-		   } else {
-				console.log("Error")
+			} else {
+				console.log("Error");
 			}
 
 			setViewModalOpen(true); // Open the view modal after fetching data
@@ -292,21 +312,49 @@ const Transactions = () => {
 		try {
 			await axios.put("http://localhost:8080/fraud/transaction/flag", {
 				transactionId: transactionId,
-				fraudRule: selectedRule,
+				fraudRule: selectedCategory,
 				remark: remark,
-				severity: severity,
+				severity: putSeverity,
 				flag: "Y",
 				modifiedBy: "lakshika",
 			});
 			setFraudStatus("Y");
+			setSeverity(putSeverity);
 			setAddNotesModalVisible(false);
-			console.log(severity,"severity")
+			setSelectedCategory("");
+			setSelectedRule("");
+			setRemark("");
+			setTransactionId("");
+
 			// Fetch data from all APIs after adding notes
 			fetchDataFromAllApis();
 		} catch (error) {
 			console.error("Error marking transaction as fraud:", error);
 		}
 	};
+
+	// Api to fetch fraud rules
+	useEffect(() => {
+		const fetchFraudRuleOptions = async () => {
+			try {
+				const response = await axios.get<FraudRuleOption[]>(
+					"http://localhost:8080/fraud/rules"
+				);
+				// Map through the response data and construct the options with description
+				const optionsWithDescription = response.data.map((option) => ({
+					id: option.id,
+					value: option.rule,
+					label: option.description,
+					type: option.type,
+				}));
+				setFraudRuleOptions(optionsWithDescription);
+			} catch (error) {
+				console.error("Error fetching fraud rule options:", error);
+			}
+		};
+
+		fetchFraudRuleOptions();
+	}, []);
 
 	// Functions --------------------------------------------------------------------------------------------------------------
 
@@ -328,6 +376,25 @@ const Transactions = () => {
 	const handleNotFlaggedClick = (record: any) => {
 		setTransactionId(record);
 		setAddNotesModalVisible(true);
+	};
+
+	// Function to extract severity in fraud rules
+	const handleChange = (value: string, option: any) => {
+		setSelectedCategory(value); // Update selected category state
+		// Find the selected option by its ID
+		const selectedOption = fraudRuleOptions.find(
+			(opt: any) => opt.id === parseInt(value)
+		);
+
+		// Check if selectedOption is defined and has a 'type' property
+		if (
+			selectedOption &&
+			"type" in selectedOption &&
+			typeof selectedOption.type === "string"
+		) {
+			const typeValue = selectedOption.type; // Access the 'type' property
+			setPutSeverity(typeValue); // Update putSeverity state with type
+		}
 	};
 
 	return (
@@ -363,72 +430,59 @@ const Transactions = () => {
 			>
 				{/* Search Fields */}
 				<Row gutter={4} style={{ marginBottom: "20px" }}>
-					<Col span={9}>
-						<Form.Item
-							label={
-								<span
-									style={{
-										color: "white",
-										marginBottom: "5px",
-										fontSize: "20px",
-									}}
-								>
-									Transaction ID
-								</span>
-							}
-							name="TransactionId"
+					<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
+						<span
+							style={{
+								color: "white",
+								marginBottom: "5px",
+								fontSize: "20px",
+							}}
 						>
+							Transaction ID
+						</span>
+						<Form.Item name="TransactionId">
 							<Input
 								style={{
 									backgroundColor: "white",
 									color: "black",
-									width: "100%",
-									// marginLeft: "10px",
+									width: "120%",
 								}}
 							/>
 						</Form.Item>
 					</Col>
 
-					<Col span={9}>
-						<Form.Item
-							label={
-								<span
-									style={{
-										color: "white",
-										marginBottom: "5px",
-										fontSize: "20px",
-									}}
-								>
-									Customer ID
-								</span>
-							}
-							name="CustomerId"
+					<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
+						<span
+							style={{
+								color: "white",
+								marginBottom: "5px",
+								fontSize: "20px",
+							}}
 						>
+							Customer ID
+						</span>
+						<Form.Item name="CustomerId">
 							<Input
 								style={{
 									backgroundColor: "white",
 									color: "black",
-									width: "100%",
+									width: "120%",
 								}}
 							/>
 						</Form.Item>
 					</Col>
 
-					<Col span={9}>
-						<Form.Item
-							label={
-								<span
-									style={{
-										color: "white",
-										marginBottom: "5px",
-										fontSize: "20px",
-									}}
-								>
-									Date Range
-								</span>
-							}
-							name="RangePicker"
+					<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
+						<span
+							style={{
+								color: "white",
+								marginBottom: "5px",
+								fontSize: "20px",
+							}}
 						>
+							Date Range
+						</span>
+						<Form.Item name="RangePicker">
 							<div>
 								<DatePicker.RangePicker
 									value={dateRange}
@@ -436,7 +490,7 @@ const Transactions = () => {
 									style={{
 										backgroundColor: "white",
 										color: "black",
-										width: "100%",
+										width: "120%",
 									}}
 								/>
 							</div>
@@ -499,7 +553,7 @@ const Transactions = () => {
 				{/* <TableComponent /> */}
 				<Table
 					dataSource={tableData}
-					style={{ backgroundColor: "#f4f4f4", borderRadius: "10px" }}
+					style={{ backgroundColor: "#f4f4f4", borderRadius: "10px",marginBottom:"50px"}}
 					columns={columns}
 					rowKey="id" // Set a unique key for each row
 					pagination={{ pageSize: 5 }}
@@ -513,7 +567,7 @@ const Transactions = () => {
 					>
 						<div className="card-container-TChart">
 							{tableData.length === 0 ? (
-								<p style={{ marginLeft: "140px" }}>No data available</p>
+								<p style={{ marginLeft: "170px" }}>No data available</p>
 							) : (
 								<>
 									Transactions by Type
@@ -521,9 +575,9 @@ const Transactions = () => {
 										className="mt-9 size-2 h-4"
 										style={{
 											scale: "0.9",
-											marginTop: "-100px",
-											paddingTop: "100px",
-											paddingLeft: "50px",
+											marginTop: "-60px",
+											paddingTop: "10px",
+											paddingLeft: "40px",
 										}}
 									>
 										<DonutChart transactions={transactionsData} />
@@ -576,7 +630,31 @@ const Transactions = () => {
 					title="Add Notes"
 					width={650}
 					visible={addNotesModalVisible}
-					onCancel={() => setAddNotesModalVisible(false)}
+					onCancel={() => {
+						setSelectedCategory("");
+						setAddNotesModalVisible(false);
+						setSelectedRule("");
+						setRemark("");
+						setSeverity("");
+						setTransactionId("");
+						if (cancelButtonClicked) {
+							setSelectedCategory("");
+							setRemark("");
+							setCancelButtonClicked(false);
+						}
+
+						// Clear UI elements manually, handling null case
+						const fraudRuleSelect = document.getElementById("selectedCategory");
+						if (fraudRuleSelect instanceof HTMLSelectElement) {
+							fraudRuleSelect.selectedIndex = 0;
+						}
+
+						const remarkTextArea = document.getElementById("remark");
+						if (remarkTextArea instanceof HTMLTextAreaElement) {
+							remarkTextArea.value = "";
+						}
+					}}
+					
 					footer={[
 						<Button key="back" onClick={() => setAddNotesModalVisible(false)}>
 							Cancel
@@ -588,29 +666,18 @@ const Transactions = () => {
 				>
 					<Form style={{ marginTop: "40px" }}>
 						<Form.Item label="Fraud Rule">
-							<Select
-								value={selectedRule}
-								onChange={(value) => setSelectedRule(value)}
-							>
-								<Option value="1">Daily transaction amount has exceeded</Option>
-								<Option value="2">
-									Abnormal transaction count with the same amount
-								</Option>
-								<Option value="3">
-									Abnormal transaction frequency in x period of time
-								</Option>
-								<Option value="4">
-								Abnormal transaction count for a specific customer outside peak hours
-								</Option>
-
-								<Option value="5">
-								Multiple declined txn in x amount of time
-								</Option>
-								<Option value="6">
-								Transaction count exceeding customer's average transaction count per day
-								</Option>
+							<Select value={selectedCategory} onChange={handleChange}>
+								<option value={""} disabled>
+									Select a Fraud Rule
+								</option>
+								{fraudRuleOptions.map((category) => (
+									<option key={category.id} value={category.id}>
+										{category.label}
+									</option>
+								))}
 							</Select>
 						</Form.Item>
+
 						<Form.Item label="Remark">
 							<TextArea
 								rows={4}

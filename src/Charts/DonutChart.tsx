@@ -58,9 +58,10 @@ const DonutChart: React.FC<Props> = ({ transactions }) => {
 				options: {
 					plugins: {
 						legend: {
+							position: 'right',
 							labels: {
 								font: {
-									size: 20, // Adjust the font size of the labels
+									size: 15, // Adjust the font size of the labels
 								},
 								padding: 30, // Add space between the labels
 							},

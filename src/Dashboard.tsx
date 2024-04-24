@@ -175,9 +175,9 @@ const Dashboard = () => {
                 <div
                   className="mt-9"
                   style={{
-                    scale: "0.65",
-                    marginTop: "-80px",
-                    marginBottom: "-80px",
+                    scale: "0.85",
+                    marginTop: "-140px",
+                    marginBottom: "-140px",
                     marginLeft: "150px",
                   }}
                 >
