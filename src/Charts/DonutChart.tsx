@@ -49,7 +49,7 @@ const DonutChart: React.FC<Props> = ({ transactions }) => {
 					labels: chartLabels,
 					datasets: [
 						{
-							backgroundColor: ["#ffe162", "#4cd180"],
+							backgroundColor: ["#ffe162", "#4cd180", "#ff6358"],
 							data: chartData,
 							borderWidth: 0, // Remove the stroke
 						},

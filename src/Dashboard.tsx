@@ -149,12 +149,13 @@ const Dashboard = () => {
                     style={{ height: "280px", paddingTop: "80px" }}
                   >
                     Total No. of Flagged Transactions
-                    <div className="large-text">{data.allMonth} </div>
+                    <div className="large-text" style={{marginRight: "20px"}}>{data.allMonth} </div>
                     <div
                       style={{
                         fontSize: "60px",
                         color: "white",
                         fontWeight: "normal",
+                        marginRight: "20px"
                       }}
                     >
                       {fraudCount}
@@ -175,7 +176,7 @@ const Dashboard = () => {
                 <div
                   className="mt-9"
                   style={{
-                    scale: "0.85",
+                    scale: "0.8",
                     marginTop: "-140px",
                     marginBottom: "-140px",
                     marginLeft: "150px",

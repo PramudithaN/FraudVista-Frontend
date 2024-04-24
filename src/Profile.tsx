@@ -113,6 +113,7 @@ const Profile = () => {
 								open={open}
 								onOk={() => setOpen(false)}
 								onCancel={() => setOpen(false)}
+								destroyOnClose
 								width={700}
 								style={{ color: "white" }}
 								className="custom-modal"
@@ -231,7 +232,7 @@ const Profile = () => {
 									fontWeight: "300",
 									alignItems: "center",
 									paddingTop: "40px",
-									paddingLeft: "80px",
+									paddingLeft: "60px",
 								}}
 							>
 								{data.allMonth}{" "}
@@ -243,7 +244,7 @@ const Profile = () => {
 									fontWeight: "300",
 									alignItems: "center",
 									paddingTop: "10px",
-									paddingLeft: "140px",
+									paddingLeft: "100px",
 								}}
 							>
 								{fraudCount}

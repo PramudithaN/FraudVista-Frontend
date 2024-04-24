@@ -574,8 +574,8 @@ const Transactions = () => {
 									<div
 										className="mt-9 size-2 h-4"
 										style={{
-											scale: "0.9",
-											marginTop: "-60px",
+											scale: "1",
+											marginTop: "-80px",
 											paddingTop: "10px",
 											paddingLeft: "40px",
 										}}
@@ -656,10 +656,7 @@ const Transactions = () => {
 					}}
 					
 					footer={[
-						<Button key="back" onClick={() => setAddNotesModalVisible(false)}>
-							Cancel
-						</Button>,
-						<Button key="submit" type="primary" onClick={handleAddNotes}>
+						<Button style={{width:"100px"}} key="submit" type="primary" onClick={handleAddNotes}>
 							Flag
 						</Button>,
 					]}
