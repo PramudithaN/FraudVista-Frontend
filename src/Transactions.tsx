@@ -6,10 +6,12 @@ import {
 	Input,
 	Layout,
 	Modal,
+	NotificationArgsProps,
 	Select,
 	Table,
 	Tag,
 	message,
+	notification,
 } from "antd";
 import { useEffect, useState } from "react";
 import { Row, Col } from "antd";
@@ -18,6 +20,9 @@ import axios from "axios";
 import moment, { Moment } from "moment";
 import dayjs, { Dayjs } from "dayjs";
 import DonutChart from "./Charts/DonutChart";
+
+type NotificationType = "success" | "info" | "warning" | "error";
+type NotificationPlacement = NotificationArgsProps["placement"];
 
 interface FraudRuleOption {
 	id: number;
@@ -75,7 +80,7 @@ const Transactions = () => {
 
 	const [selectedCategory, setSelectedCategory] = useState<any>("");
 	const [cancelButtonClicked, setCancelButtonClicked] = useState(false);
-
+	const [api, contextHolder] = notification.useNotification();
 
 	//Add Notes States
 	const { Option } = Select;
@@ -309,27 +314,41 @@ const Transactions = () => {
 
 	//Api to mark transaction as fraud
 	const handleAddNotes = async () => {
-		try {
-			await axios.put("http://localhost:8080/fraud/transaction/flag", {
-				transactionId: transactionId,
-				fraudRule: selectedCategory,
-				remark: remark,
-				severity: putSeverity,
-				flag: "Y",
-				modifiedBy: "lakshika",
-			});
-			setFraudStatus("Y");
-			setSeverity(putSeverity);
-			setAddNotesModalVisible(false);
-			setSelectedCategory("");
-			setSelectedRule("");
-			setRemark("");
-			setTransactionId("");
+		if (
+			(remark === "" || remark === null) &&
+			(selectedRule === "" || selectedRule === null)
+		) {
+			// message.error("Please enter a remark and select a fraud rule.");
+			errorNotification("error", "bottomRight");
+			return;
+		} else {
+			// message.success("Transaction has been marked as fraud.");
+			successNotification("success", "bottomRight");
+			console.log("SUCESS");
 
-			// Fetch data from all APIs after adding notes
-			fetchDataFromAllApis();
-		} catch (error) {
-			console.error("Error marking transaction as fraud:", error);
+			// try {
+				await axios.put("http://localhost:8080/fraud/transaction/flag", {
+					transactionId: transactionId,
+					fraudRule: selectedCategory,
+					remark: remark,
+					severity: putSeverity,
+					flag: "Y",
+					modifiedBy: "lakshika",
+				});
+
+				setFraudStatus("Y");
+				setSeverity(putSeverity);
+				setAddNotesModalVisible(false);
+				setSelectedCategory("");
+				setSelectedRule("");
+				setRemark("");
+				setTransactionId("");
+
+				// Fetch data from all APIs after adding notes
+				fetchDataFromAllApis();
+			// } catch (error) {
+			// 	console.error("Error marking transaction as fraud:", error);
+			// }
 		}
 	};
 
@@ -358,6 +377,28 @@ const Transactions = () => {
 
 	// Functions --------------------------------------------------------------------------------------------------------------
 
+	// Function to display success notification
+	const successNotification = (
+		type: NotificationType,
+		placement: NotificationPlacement
+	) => {
+		api[type]({
+			message: "Success",
+			placement: placement,
+			description: "Transaction has been marked as fraud.",
+		});
+	};
+
+	const errorNotification = (
+		type: NotificationType,
+		placement: NotificationPlacement
+	) => {
+		api[type]({
+			message: "Error",
+			placement: placement,
+			description: "Please enter a remark and select a fraud rule.",
+		});
+	};
 	// Handler for date range change
 	const handleDateRangeChange = (
 		dates: [Dayjs | null, Dayjs | null],
@@ -398,295 +439,307 @@ const Transactions = () => {
 	};
 
 	return (
-		<Layout style={{ backgroundColor: "#020617" }}>
-			<Header style={{ padding: 0, background: "#020617" }} />
-			<h1 className="Heading">Transaction Inquiry Details</h1>
-			<Form
-				{...formItemLayout}
-				form={form}
-				onFinish={(values) => {
-					{
-						const { TransactionId, CustomerId } = values;
-						if (TransactionId) {
-							searchByTransactionID(TransactionId);
-							handleSearchCriteriaChange("TransactionId");
-						} else if (CustomerId) {
-							searchByCustomerID(CustomerId);
-							handleSearchCriteriaChange("CustomerId");
-						} else if (dateRange) {
-							fetchData();
-							handleSearchCriteriaChange("DateRange");
+		<>
+			{contextHolder}
+			<Layout style={{ backgroundColor: "#020617" }}>
+				<Header style={{ padding: 0, background: "#020617" }} />
+				<h1 className="Heading">Transaction Inquiry Details</h1>
+				<Form
+					{...formItemLayout}
+					form={form}
+					onFinish={(values) => {
+						{
+							const { TransactionId, CustomerId } = values;
+							if (TransactionId) {
+								searchByTransactionID(TransactionId);
+								handleSearchCriteriaChange("TransactionId");
+							} else if (CustomerId) {
+								searchByCustomerID(CustomerId);
+								handleSearchCriteriaChange("CustomerId");
+							} else if (dateRange) {
+								fetchData();
+								handleSearchCriteriaChange("DateRange");
+							}
+							form.resetFields();
 						}
-						form.resetFields();
-					}
-				}}
-				variant="filled"
-				style={{
-					maxWidth: 3200,
-					marginTop: "100px",
-					marginLeft: "50px",
-					marginRight: "50px",
-				}}
-			>
-				{/* Search Fields */}
-				<Row gutter={4} style={{ marginBottom: "20px" }}>
-					<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
-						<span
-							style={{
-								color: "white",
-								marginBottom: "5px",
-								fontSize: "20px",
-							}}
-						>
-							Transaction ID
-						</span>
-						<Form.Item name="TransactionId">
-							<Input
+					}}
+					variant="filled"
+					style={{
+						maxWidth: 3200,
+						marginTop: "100px",
+						marginLeft: "50px",
+						marginRight: "50px",
+					}}
+				>
+					{/* Search Fields */}
+					<Row gutter={4} style={{ marginBottom: "20px" }}>
+						<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
+							<span
 								style={{
-									backgroundColor: "white",
-									color: "black",
-									width: "120%",
+									color: "white",
+									marginBottom: "5px",
+									fontSize: "20px",
 								}}
-							/>
-						</Form.Item>
-					</Col>
-
-					<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
-						<span
-							style={{
-								color: "white",
-								marginBottom: "5px",
-								fontSize: "20px",
-							}}
-						>
-							Customer ID
-						</span>
-						<Form.Item name="CustomerId">
-							<Input
-								style={{
-									backgroundColor: "white",
-									color: "black",
-									width: "120%",
-								}}
-							/>
-						</Form.Item>
-					</Col>
-
-					<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
-						<span
-							style={{
-								color: "white",
-								marginBottom: "5px",
-								fontSize: "20px",
-							}}
-						>
-							Date Range
-						</span>
-						<Form.Item name="RangePicker">
-							<div>
-								<DatePicker.RangePicker
-									value={dateRange}
-									onChange={handleDateRangeChange}
+							>
+								Transaction ID
+							</span>
+							<Form.Item name="TransactionId">
+								<Input
 									style={{
 										backgroundColor: "white",
 										color: "black",
 										width: "120%",
 									}}
 								/>
-							</div>
-						</Form.Item>
-					</Col>
-				</Row>
+							</Form.Item>
+						</Col>
 
-				{/* Search Button */}
-				<Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-					<Button
-						type="primary"
-						htmlType="submit"
-						onClick={fetchData}
-						style={{
-							// width: "15%",
-							marginBottom: "20px",
-							marginLeft: "250px",
-							height: "40px",
-							fontSize: "22px",
-							paddingTop: "1px",
-							paddingLeft: "40px",
-							paddingRight: "40px",
-							fontWeight: "600",
-						}}
-					>
-						Search
-					</Button>
-				</Form.Item>
+						<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
+							<span
+								style={{
+									color: "white",
+									marginBottom: "5px",
+									fontSize: "20px",
+								}}
+							>
+								Customer ID
+							</span>
+							<Form.Item name="CustomerId">
+								<Input
+									style={{
+										backgroundColor: "white",
+										color: "black",
+										width: "120%",
+									}}
+								/>
+							</Form.Item>
+						</Col>
 
-				{/* Display Tag */}
-				<Form.Item>
-					<div
-						style={{
-							alignItems: "center",
-							justifyContent: "center",
-							display: "flex",
-							marginLeft: "540px",
-							marginTop: "20px",
-						}}
-					>
-						<Tag
+						<Col span={8} style={{ display: "flex", flexDirection: "column" }}>
+							<span
+								style={{
+									color: "white",
+									marginBottom: "5px",
+									fontSize: "20px",
+								}}
+							>
+								Date Range
+							</span>
+							<Form.Item name="RangePicker">
+								<div>
+									<DatePicker.RangePicker
+										value={dateRange}
+										onChange={handleDateRangeChange}
+										style={{
+											backgroundColor: "white",
+											color: "black",
+											width: "120%",
+										}}
+									/>
+								</div>
+							</Form.Item>
+						</Col>
+					</Row>
+
+					{/* Search Button */}
+					<Form.Item wrapperCol={{ offset: 6, span: 16 }}>
+						<Button
+							type="primary"
+							htmlType="submit"
+							onClick={fetchData}
 							style={{
-								color: "#4096ff",
-								backgroundColor: "#292e3c",
-								borderColor: "#434b62",
-								stroke: "#292e3c",
+								// width: "15%",
+								marginBottom: "20px",
+								marginLeft: "250px",
 								height: "40px",
-								fontSize: "18px",
-								paddingTop: "8px",
-								fontWeight: "400",
-								fontStyle: "italic",
+								fontSize: "22px",
+								paddingTop: "1px",
+								paddingLeft: "40px",
+								paddingRight: "40px",
+								fontWeight: "600",
 							}}
 						>
-							Please search using any of the above criteria to inquire
-							transaction details.
-						</Tag>
-					</div>
-				</Form.Item>
+							Search
+						</Button>
+					</Form.Item>
 
-				{/* <TableComponent /> */}
-				<Table
-					dataSource={tableData}
-					style={{ backgroundColor: "#f4f4f4", borderRadius: "10px",marginBottom:"50px"}}
-					columns={columns}
-					rowKey="id" // Set a unique key for each row
-					pagination={{ pageSize: 5 }}
-				/>
-
-				{/* Content for Transactions by Type */}
-				{searchCriteria === "CustomerId" && (
-					<div
-						className="flex-item"
-						style={{ marginTop: "50px", marginBottom: "30px" }}
-					>
-						<div className="card-container-TChart">
-							{tableData.length === 0 ? (
-								<p style={{ marginLeft: "170px" }}>No data available</p>
-							) : (
-								<>
-									Transactions by Type
-									<div
-										className="mt-9 size-2 h-4"
-										style={{
-											scale: "1",
-											marginTop: "-80px",
-											paddingTop: "10px",
-											paddingLeft: "40px",
-										}}
-									>
-										<DonutChart transactions={transactionsData} />
-									</div>
-								</>
-							)}
+					{/* Display Tag */}
+					<Form.Item>
+						<div
+							style={{
+								alignItems: "center",
+								justifyContent: "center",
+								display: "flex",
+								marginLeft: "540px",
+								marginTop: "20px",
+							}}
+						>
+							<Tag
+								style={{
+									color: "#4096ff",
+									backgroundColor: "#292e3c",
+									borderColor: "#434b62",
+									stroke: "#292e3c",
+									height: "40px",
+									fontSize: "18px",
+									paddingTop: "8px",
+									fontWeight: "400",
+									fontStyle: "italic",
+								}}
+							>
+								Please search using any of the above criteria to inquire
+								transaction details.
+							</Tag>
 						</div>
-					</div>
-				)}
+					</Form.Item>
 
-				{/* View Notes Modal */}
-				<Modal
-					title="View Notes"
-					width={650}
-					visible={viewModalOpen}
-					onCancel={() => setViewModalOpen(false)}
-					footer={null}
-				>
-					<Form style={{ marginLeft: "10px", marginTop: "30px" }}>
-						<Row gutter={16}>
-							<Form.Item label="Transaction ID" style={{ fontWeight: 480 }}>
-								{transactionDetails?.transactionId}
-							</Form.Item>
-						</Row>
-						<Row gutter={16}>
-							<Form.Item label="Remark" style={{ fontWeight: 480 }}>
-								{transactionDetails?.remark}
-							</Form.Item>
-						</Row>
-						<Row gutter={16}>
-							<Form.Item label="Severity" style={{ fontWeight: 480 }}>
-								{transactionDetails?.severity}
-							</Form.Item>
-						</Row>
-						<Row gutter={16}>
-							<Form.Item label="Fraud Rule" style={{ fontWeight: 480 }}>
-								{transactionDetails?.fraudRule}
-							</Form.Item>
-						</Row>
-						<Row gutter={16}>
-							<Form.Item label="Rule Description" style={{ fontWeight: 480 }}>
-								{transactionDetails?.ruleDescription}
-							</Form.Item>
-						</Row>
-					</Form>
-				</Modal>
+					{/* <TableComponent /> */}
+					<Table
+						dataSource={tableData}
+						style={{
+							backgroundColor: "#f4f4f4",
+							borderRadius: "10px",
+							marginBottom: "50px",
+						}}
+						columns={columns}
+						rowKey="id" // Set a unique key for each row
+						pagination={{ pageSize: 5 }}
+					/>
 
-				{/* Add Notes Modal */}
-				<Modal
-					title="Add Notes"
-					width={650}
-					visible={addNotesModalVisible}
-					onCancel={() => {
-						setSelectedCategory("");
-						setAddNotesModalVisible(false);
-						setSelectedRule("");
-						setRemark("");
-						setSeverity("");
-						setTransactionId("");
-						if (cancelButtonClicked) {
+					{/* Content for Transactions by Type */}
+					{searchCriteria === "CustomerId" && (
+						<div
+							className="flex-item"
+							style={{ marginTop: "50px", marginBottom: "30px" }}
+						>
+							<div className="card-container-TChart">
+								{tableData.length === 0 ? (
+									<p style={{ marginLeft: "170px" }}>No data available</p>
+								) : (
+									<>
+										Transactions by Type
+										<div
+											className="mt-9 size-2 h-4"
+											style={{
+												scale: "1",
+												marginTop: "-80px",
+												paddingTop: "10px",
+												paddingLeft: "40px",
+											}}
+										>
+											<DonutChart transactions={transactionsData} />
+										</div>
+									</>
+								)}
+							</div>
+						</div>
+					)}
+
+					{/* View Notes Modal */}
+					<Modal
+						title="View Notes"
+						width={650}
+						visible={viewModalOpen}
+						onCancel={() => setViewModalOpen(false)}
+						footer={null}
+					>
+						<Form style={{ marginLeft: "10px", marginTop: "30px" }}>
+							<Row gutter={16}>
+								<Form.Item label="Transaction ID" style={{ fontWeight: 480 }}>
+									{transactionDetails?.transactionId}
+								</Form.Item>
+							</Row>
+							<Row gutter={16}>
+								<Form.Item label="Remark" style={{ fontWeight: 480 }}>
+									{transactionDetails?.remark}
+								</Form.Item>
+							</Row>
+							<Row gutter={16}>
+								<Form.Item label="Severity" style={{ fontWeight: 480 }}>
+									{transactionDetails?.severity}
+								</Form.Item>
+							</Row>
+							<Row gutter={16}>
+								<Form.Item label="Fraud Rule" style={{ fontWeight: 480 }}>
+									{transactionDetails?.fraudRule}
+								</Form.Item>
+							</Row>
+							<Row gutter={16}>
+								<Form.Item label="Rule Description" style={{ fontWeight: 480 }}>
+									{transactionDetails?.ruleDescription}
+								</Form.Item>
+							</Row>
+						</Form>
+					</Modal>
+
+					{/* Add Notes Modal */}
+					<Modal
+						title="Add Notes"
+						width={650}
+						visible={addNotesModalVisible}
+						onCancel={() => {
 							setSelectedCategory("");
+							setAddNotesModalVisible(false);
+							setSelectedRule("");
 							setRemark("");
-							setCancelButtonClicked(false);
-						}
+							setSeverity("");
+							setTransactionId("");
+							if (cancelButtonClicked) {
+								setSelectedCategory("");
+								setRemark("");
+								setCancelButtonClicked(false);
+							}
 
-						// Clear UI elements manually, handling null case
-						const fraudRuleSelect = document.getElementById("selectedCategory");
-						if (fraudRuleSelect instanceof HTMLSelectElement) {
-							fraudRuleSelect.selectedIndex = 0;
-						}
+							// Clear UI elements manually, handling null case
+							const fraudRuleSelect =
+								document.getElementById("selectedCategory");
+							if (fraudRuleSelect instanceof HTMLSelectElement) {
+								fraudRuleSelect.selectedIndex = 0;
+							}
 
-						const remarkTextArea = document.getElementById("remark");
-						if (remarkTextArea instanceof HTMLTextAreaElement) {
-							remarkTextArea.value = "";
-						}
-					}}
-					
-					footer={[
-						<Button style={{width:"100px"}} key="submit" type="primary" onClick={handleAddNotes}>
-							Flag
-						</Button>,
-					]}
-				>
-					<Form style={{ marginTop: "40px" }}>
-						<Form.Item label="Fraud Rule">
-							<Select value={selectedCategory} onChange={handleChange}>
-								<option value={""} disabled>
-									Select a Fraud Rule
-								</option>
-								{fraudRuleOptions.map((category) => (
-									<option key={category.id} value={category.id}>
-										{category.label}
+							const remarkTextArea = document.getElementById("remark");
+							if (remarkTextArea instanceof HTMLTextAreaElement) {
+								remarkTextArea.value = "";
+							}
+						}}
+						footer={[
+							<Button
+								style={{ width: "100px" }}
+								key="submit"
+								type="primary"
+								onClick={handleAddNotes}
+							>
+								Flag
+							</Button>,
+						]}
+					>
+						<Form style={{ marginTop: "40px" }}>
+							<Form.Item label="Fraud Rule">
+								<Select value={selectedCategory} onChange={handleChange}>
+									<option value={""} disabled>
+										Select a Fraud Rule
 									</option>
-								))}
-							</Select>
-						</Form.Item>
+									{fraudRuleOptions.map((category) => (
+										<option key={category.id} value={category.id}>
+											{category.label}
+										</option>
+									))}
+								</Select>
+							</Form.Item>
 
-						<Form.Item label="Remark">
-							<TextArea
-								rows={4}
-								value={remark}
-								onChange={(e) => setRemark(e.target.value)}
-							/>
-						</Form.Item>
-					</Form>
-				</Modal>
-			</Form>
-			<FloatButton.BackTop />
-		</Layout>
+							<Form.Item label="Remark">
+								<TextArea
+									rows={4}
+									value={remark}
+									onChange={(e) => setRemark(e.target.value)}
+								/>
+							</Form.Item>
+						</Form>
+					</Modal>
+				</Form>
+				<FloatButton.BackTop />
+			</Layout>
+		</>
 	);
 };
 

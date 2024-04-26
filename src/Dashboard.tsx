@@ -44,6 +44,8 @@ const Dashboard = () => {
   const currentMonth = dayjs().format("MMMM");
   const [transactionsData, setTransactionsData] = useState<any[]>([]); // Define state to store transactions data
 
+  const [fraudData, setFraudData] = useState<any[]>([]);
+
   //API call for Total No. of Transactions
   useEffect(() => {
     const allTransactions = async () => {
@@ -92,6 +94,22 @@ const Dashboard = () => {
 
     allTransactions();
   }, []); // Empty dependency array means this effect runs once on mount
+
+  //API to fetch fraud transactions
+  useEffect(() => {
+    const fetchFraudTransactions = async () => {
+      try {
+        const response = await axios.get<any>(
+          "http://localhost:8080/fraud/transaction"
+        );
+        setFraudData(response.data);
+      } catch (error) {
+        console.error("Error fetching fraud transactions:", error);
+      }
+    };
+
+    fetchFraudTransactions();
+  }, []);
 
   return (
     <>
@@ -149,13 +167,15 @@ const Dashboard = () => {
                     style={{ height: "280px", paddingTop: "80px" }}
                   >
                     Total No. of Flagged Transactions
-                    <div className="large-text" style={{marginRight: "20px"}}>{data.allMonth} </div>
+                    <div className="large-text" style={{ marginRight: "20px" }}>
+                      {data.allMonth}{" "}
+                    </div>
                     <div
                       style={{
                         fontSize: "60px",
                         color: "white",
                         fontWeight: "normal",
-                        marginRight: "20px"
+                        marginRight: "20px",
                       }}
                     >
                       {fraudCount}
@@ -191,14 +211,17 @@ const Dashboard = () => {
               <div className="card-container">
                 Unusual Alerts Identified
                 <div style={{ marginTop: "40px" }}>
-                  {transactionsData
-                    .filter((transaction) => transaction.isFraud === "Y") // Filter out transactions where isFraud is not 'Y'
-                    .sort((a, b) => b.id - a.id) // Sort transactions by ID in descending order
-                    .slice(-6) // Get the first 6 transactions after sorting
+                  {fraudData
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdDate).getTime() -
+                        new Date(a.createdDate).getTime()
+                    ) // Sort transactions by createdDate in descending order
+                    .slice(0, 6) // Get the latest 6 fraud transactions
                     .map((transaction) => (
                       <Alert
-                        key={transaction.id}
-                        message={`Transaction ID ${transaction.id} is identified as a fraud`}
+                        key={transaction.transaction.id}
+                        message={`Transaction ID ${transaction.transaction.id} is identified as a fraud`}
                         type="warning"
                         style={{
                           padding: "10px",
